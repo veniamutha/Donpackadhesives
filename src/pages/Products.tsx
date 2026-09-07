@@ -42,12 +42,12 @@ export default function Products() {
   };
 
   return (
-    <div className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
       {/* Application Finder Header */}
-      <div className="text-center mb-16">
+      <div className="text-center mb-10 sm:mb-16">
         <h2 className="text-sm font-bold text-brand-green uppercase tracking-wider mb-2">Application Finder</h2>
-        <h3 className="text-4xl font-extrabold text-brand-navy mb-8">What are you bonding?</h3>
+        <h3 className="text-2xl sm:text-4xl font-extrabold text-brand-navy mb-6 sm:mb-8">What are you bonding?</h3>
         
         {/* Filter Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
@@ -63,14 +63,14 @@ export default function Products() {
               <button
                 key={app.name}
                 onClick={() => setApplication(app.name as any)}
-                className={`p-6 rounded-xl border-2 flex flex-col items-center justify-center gap-4 transition-all ${
+                className={`p-3 sm:p-6 rounded-xl border-2 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-all ${
                   isSelected 
                     ? 'border-brand-green bg-green-50 shadow-md transform -translate-y-1' 
                     : 'border-slate-100 bg-white hover:border-brand-navy hover:shadow'
                 }`}
               >
-                <Icon className={`w-8 h-8 ${isSelected ? 'text-brand-green' : 'text-slate-400'}`} />
-                <span className={`font-bold ${isSelected ? 'text-brand-navy' : 'text-slate-600'}`}>{app.name}</span>
+                <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${isSelected ? 'text-brand-green' : 'text-slate-400'}`} />
+                <span className={`font-bold text-sm sm:text-base ${isSelected ? 'text-brand-navy' : 'text-slate-600'}`}>{app.name}</span>
               </button>
             )
           })}
@@ -79,9 +79,9 @@ export default function Products() {
 
       {/* Recommended Solutions */}
       <div>
-        <h3 className="text-2xl font-bold text-slate-800 mb-8 border-b pb-4 flex items-center justify-between">
-          <span>{selectedApplication === 'All' ? 'Complete Catalog' : `Recommended for ${selectedApplication}`}</span>
-          <span className="text-brand-navy font-bold bg-slate-100 px-3 py-1 rounded-full text-sm">{filteredProducts.length} items</span>
+        <h3 className="text-lg sm:text-2xl font-bold text-slate-800 mb-6 sm:mb-8 border-b pb-4 flex items-center justify-between gap-2">
+          <span className="truncate">{selectedApplication === 'All' ? 'Complete Catalog' : `For ${selectedApplication}`}</span>
+          <span className="flex-shrink-0 text-brand-navy font-bold bg-slate-100 px-3 py-1 rounded-full text-sm">{filteredProducts.length} items</span>
         </h3>
 
         {isLoading ? (
@@ -100,7 +100,7 @@ export default function Products() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product, index) => (
+          {filteredProducts.map((product) => (
             <motion.div 
               key={product.id} 
               initial={{ opacity: 0, y: 30 }}
@@ -152,7 +152,7 @@ export default function Products() {
 
       {/* Product Detail Modal */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6" aria-labelledby="modal-title" role="dialog" aria-modal="true">
           {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
@@ -160,10 +160,10 @@ export default function Products() {
           ></div>
 
           {/* Modal Panel */}
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col relative z-10 transform transition-all">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-5xl max-h-[92vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative z-10 transform transition-all">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <h2 className="text-2xl font-bold text-brand-navy pr-4" id="modal-title">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-100">
+              <h2 className="text-base sm:text-2xl font-bold text-brand-navy pr-2 line-clamp-2" id="modal-title">
                 {selectedProduct.name}
               </h2>
               <div className="flex items-center gap-2 sm:gap-3 border-l border-slate-200 pl-4">
@@ -193,8 +193,8 @@ export default function Products() {
             </div>
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto flex-1 p-6">
-              <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="overflow-y-auto flex-1 p-4 sm:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
                 
                 {/* Left Column: Image Gallery & Description */}
                 <div className="flex flex-col">
@@ -207,7 +207,7 @@ export default function Products() {
                       className="w-full h-full object-cover"
                     />
                     
-                    {/* Navigation Arrows (if multiple images) */}
+                    {/* Navigation Arrows (always visible on mobile, hover on desktop) */}
                     {selectedProduct.images.length > 1 && (
                       <>
                         <button 
@@ -215,7 +215,7 @@ export default function Products() {
                             e.stopPropagation();
                             setActiveImageIndex(prev => prev === 0 ? selectedProduct.images.length - 1 : prev - 1);
                           }}
-                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-sm opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <ChevronLeft className="w-5 h-5" />
                         </button>
@@ -224,7 +224,7 @@ export default function Products() {
                             e.stopPropagation();
                             setActiveImageIndex(prev => prev === selectedProduct.images.length - 1 ? 0 : prev + 1);
                           }}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-slate-800 p-2 rounded-full shadow-sm opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <ChevronRight className="w-5 h-5" />
                         </button>
@@ -285,16 +285,16 @@ export default function Products() {
             </div>
 
             {/* Footer / CTA */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-4">
+            <div className="p-4 sm:p-6 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
               <button 
                 onClick={() => setSelectedProduct(null)}
-                className="px-6 py-2.5 text-slate-600 font-medium hover:bg-slate-200 rounded transition-colors"
+                className="w-full sm:w-auto px-6 py-2.5 text-slate-600 font-medium hover:bg-slate-200 rounded transition-colors order-2 sm:order-1"
               >
                 Close
               </button>
               <button 
                 onClick={() => setQuoteModalOpen(true)}
-                className="px-6 py-2.5 bg-brand-green hover:bg-green-800 text-white font-medium rounded transition-colors flex items-center gap-2 shadow-sm"
+                className="w-full sm:w-auto px-6 py-2.5 bg-brand-green hover:bg-green-800 text-white font-medium rounded transition-colors flex items-center justify-center gap-2 shadow-sm order-1 sm:order-2"
               >
                 <ShoppingCart className="w-5 h-5" /> Interested? Book Order
               </button>

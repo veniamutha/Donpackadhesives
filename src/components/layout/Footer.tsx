@@ -5,7 +5,7 @@ export default function Footer() {
   const { setAdminLoginModalOpen } = useUIStore();
 
   return (
-    <footer className="bg-brand-navy text-white pt-16 pb-24 md:pb-12 px-8 md:px-16 lg:px-24">
+    <footer className="bg-brand-navy text-white pt-12 sm:pt-16 pb-24 md:pb-12 px-4 sm:px-8 md:px-16 lg:px-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
         
         {/* Brand Column */}

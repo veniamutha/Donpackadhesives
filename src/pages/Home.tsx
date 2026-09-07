@@ -104,7 +104,7 @@ export default function Home() {
       </section>
 
       {/* Solutions Section Placeholder */}
-      <section id="solutions" className="bg-brand-bg py-24 px-8 md:px-16 lg:px-24 overflow-hidden">
+      <section id="solutions" className="bg-brand-bg py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -256,7 +256,7 @@ export default function Home() {
       </section>
 
       {/* About Us Section */}
-      <section id="about" className="bg-white py-24 px-8 md:px-16 lg:px-24 overflow-hidden">
+      <section id="about" className="bg-white py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
