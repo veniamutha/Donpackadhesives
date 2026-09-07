@@ -50,7 +50,9 @@ export default function QuoteModal() {
       }, 3000);
 
     } catch (err: any) {
-      setError('Failed to send request. Please try WhatsApp or call us directly.');
+      console.error('Quote form error:', err);
+      const msg = err?.message || err?.details || JSON.stringify(err);
+      setError(`Error: ${msg}`);
     } finally {
       setIsSubmitting(false);
     }
