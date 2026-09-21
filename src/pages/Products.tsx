@@ -42,7 +42,7 @@ export default function Products() {
   };
 
   return (
-    <div className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="min-h-[calc(100vh-64px)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
       {/* Application Finder Header */}
       <div className="text-center mb-10 sm:mb-16">

@@ -1,6 +1,5 @@
 import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Products from './Products';
 import { useUIStore } from '../store/useUIStore';
 
 export default function Home() {
@@ -39,7 +38,7 @@ export default function Home() {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="text-lg sm:text-xl text-slate-100 mb-10 max-w-2xl leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium"
           >
-            DONPACK ADHESIVE delivers innovative, high-performance hot-melt technology tailored for demanding industrial and packaging applications worldwide.
+            DONPACK ADHESIVES delivers innovative, high-performance hot-melt technology tailored for demanding industrial and packaging applications worldwide.
           </motion.p>
           
           <motion.div 
@@ -98,10 +97,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Products Section */}
-      <section id="products" className="bg-white">
-        <Products />
-      </section>
+
 
       {/* Solutions Section Placeholder */}
       <section id="solutions" className="bg-brand-bg py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
@@ -128,9 +124,11 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&q=80&w=800" alt="Carton Sealing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white">
+              <div className="relative">
+                <div className="h-48 overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&q=80&w=800" alt="Carton Sealing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
                   <Box className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -150,9 +148,11 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&q=80&w=800" alt="Laminated Packaging" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white">
+              <div className="relative">
+                <div className="h-48 overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&q=80&w=800" alt="Laminated Packaging" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
                   <Layers className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -172,9 +172,11 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1550986522-a72e737c1578?auto=format&fit=crop&q=80&w=800" alt="Paper Bag Manufacturing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white">
+              <div className="relative">
+                <div className="h-48 overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1760565030346-4b947220fe3a?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Paper Bag Manufacturing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
                   <ShoppingBag className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -194,9 +196,11 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&q=80&w=800" alt="Mattress Manufacturing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white">
+              <div className="relative">
+                <div className="h-48 overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&q=80&w=800" alt="Mattress Manufacturing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
                   <BedDouble className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -216,9 +220,11 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&q=80&w=800" alt="PET Bottle Labeling" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white">
+              <div className="relative">
+                <div className="h-48 overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&q=80&w=800" alt="PET Bottle Labeling" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
                   <Tag className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -238,9 +244,11 @@ export default function Home() {
               transition={{ duration: 0.4 }}
               className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden relative">
-                <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=800" alt="Hygiene Sectors" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white">
+              <div className="relative">
+                <div className="h-48 overflow-hidden">
+                  <img src="https://plus.unsplash.com/premium_photo-1726736512382-dde5c56ecdd1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGRhaWx5JTIwZXNzZW50aWFsc3xlbnwwfHwwfHx8MA%3D%3D" alt="Hygiene Sectors" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
                   <HeartHandshake className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -255,33 +263,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Us Section */}
-      <section id="about" className="bg-white py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto"
-        >
-          <h2 className="text-3xl font-bold text-brand-navy mb-6">About DONPACK ADHESIVE</h2>
-          
-          <p className="text-slate-600 mb-4 leading-relaxed">
-            Welcome to Donpack, your trusted partner in advanced industrial bonding solutions. Headquartered in Chennai, we are premier importers and suppliers of high-grade hot melt adhesives, engineered to meet the demanding performance standards of modern, high-speed manufacturing environments.
-          </p>
-          
-          <p className="text-slate-600 mb-12 leading-relaxed">
-            With a deep understanding of diverse industrial workflows, we supply versatile, reliable, and premium-quality hot melt formulations designed to ensure seamless production lines and superior structural integrity for our clients across India.
-          </p>
 
-          <h3 className="text-xl font-bold text-brand-navy mb-4 border-b pb-2 border-slate-100">Why Choose Donpack?</h3>
-          <ul className="list-disc pl-6 text-slate-600 space-y-3">
-            <li><strong className="text-brand-navy">Global Quality Standards:</strong> Sourced from world-class manufacturers to guarantee optimal thermal stability, precise open times, and exceptional bond strength.</li>
-            <li><strong className="text-brand-navy">Industry-Wide Versatility:</strong> A comprehensive portfolio capable of handling challenging surfaces, low-energy materials, and varying application machinery speeds.</li>
-            <li><strong className="text-brand-navy">Strategic Hub & Reliability:</strong> Centrally positioned in Chennai, we offer efficient inventory management and dependable distribution to keep your industrial operations running without interruption.</li>
-          </ul>
-        </motion.div>
-      </section>
     </div>
   );
 }

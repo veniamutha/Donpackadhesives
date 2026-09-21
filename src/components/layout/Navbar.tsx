@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useUIStore } from '../../store/useUIStore';
 
 export default function Navbar() {
@@ -9,18 +10,17 @@ export default function Navbar() {
   return (
     <nav className="bg-brand-bg shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <a href="#home" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img src="/logo.jpg" alt="DonPack Logo" className="h-10 w-auto object-contain" />
           <span className="font-bold text-xl ml-2 text-brand-navy uppercase tracking-wide">
-            DonPack Adhesive
+            DonPack Adhesives
           </span>
-        </a>
+        </Link>
         
         <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-          <a href="#home" className="hover:text-brand-navy transition-colors">Home</a>
-          <a href="#products" className="hover:text-brand-navy transition-colors">Products</a>
-          <a href="#solutions" className="hover:text-brand-navy transition-colors">Solutions</a>
-          <a href="#about" className="hover:text-brand-navy transition-colors">About Us</a>
+          <Link to="/" className="hover:text-brand-navy transition-colors">Home</Link>
+          <Link to="/products" className="hover:text-brand-navy transition-colors">Products</Link>
+          <Link to="/about" className="hover:text-brand-navy transition-colors">About Us</Link>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
@@ -44,10 +44,9 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-slate-100 shadow-lg absolute w-full left-0">
           <div className="flex flex-col px-4 py-4 gap-4 font-medium text-slate-600">
-            <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">Home</a>
-            <a href="#products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">Products</a>
-            <a href="#solutions" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">Solutions</a>
-            <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">About Us</a>
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">Home</Link>
+            <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">Products</Link>
+            <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-brand-navy transition-colors block py-2">About Us</Link>
           </div>
         </div>
       )}

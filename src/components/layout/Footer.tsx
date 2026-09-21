@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin, Clock, ExternalLink, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useUIStore } from '../../store/useUIStore';
 
 export default function Footer() {
@@ -11,10 +12,10 @@ export default function Footer() {
         {/* Brand Column */}
         <div className="flex flex-col items-start">
           <div className="bg-white p-3 rounded-2xl inline-flex items-center justify-center mb-6 shadow-xl shadow-black/20">
-            <img src="/logo.jpg" alt="DonPack Adhesive Logo" className="h-16 w-16 object-contain" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
+            <img src="/logo.jpg" alt="DonPack Adhesives Logo" className="h-16 w-16 object-contain" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight mb-4">
-            DONPACK <span className="text-brand-green">ADHESIVE</span>
+            DONPACK <span className="text-brand-green">ADHESIVES</span>
           </h2>
           <p className="text-slate-300 max-w-sm leading-relaxed mb-6">
             Premier importers and suppliers of high-grade hot melt adhesives, engineered to meet the demanding performance standards of modern, high-speed manufacturing environments.
@@ -25,10 +26,9 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
           <ul className="space-y-4 text-slate-300">
-            <li><a href="#home" className="hover:text-brand-green transition-colors">Home</a></li>
-            <li><a href="#products" className="hover:text-brand-green transition-colors">Products</a></li>
-            <li><a href="#solutions" className="hover:text-brand-green transition-colors">Industry Solutions</a></li>
-            <li><a href="#about" className="hover:text-brand-green transition-colors">About Us</a></li>
+            <li><Link to="/" className="hover:text-brand-green transition-colors">Home</Link></li>
+            <li><Link to="/products" className="hover:text-brand-green transition-colors">Products</Link></li>
+            <li><Link to="/about" className="hover:text-brand-green transition-colors">About Us</Link></li>
             <li>
               <a href="https://www.indiamart.com/donpack/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-brand-green transition-colors">
                 IndiaMART Profile <ExternalLink className="w-4 h-4" />
@@ -67,7 +67,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-slate-700/50 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-sm">
-        <p>© {new Date().getFullYear()} Donpack Adhesive. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Donpack Adhesives. All rights reserved.</p>
         <div className="flex gap-6 items-center">
           <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
           <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
