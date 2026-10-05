@@ -10,6 +10,7 @@ import Products from './pages/Products';
 import AboutUs from './pages/AboutUs';
 import AdminDashboard from './pages/AdminDashboard';
 import { useUIStore } from './store/useUIStore';
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const { isAdmin } = useUIStore();
@@ -39,6 +40,7 @@ function App() {
       ) : (
         <AdminDashboard />
       )}
+      <Analytics />
     </div>
   );
 }

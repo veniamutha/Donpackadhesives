@@ -1,16 +1,26 @@
-import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { useUIStore } from '../store/useUIStore';
+import { useFlyerStore } from '../store/useFlyerStore';
 
 export default function Home() {
   const { setQuoteModalOpen } = useUIStore();
+  const { flyers, fetchFlyers } = useFlyerStore();
+  const [activeFlyerIndex, setActiveFlyerIndex] = useState(0);
+  const [zoomedFlyer, setZoomedFlyer] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchFlyers();
+  }, [fetchFlyers]);
+
   return (
     <div>
       {/* Centered Full-Width Hero Section */}
       <section id="home" className="relative min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
         {/* Background Image & Overlay */}
         <div className="absolute inset-0 z-0">
-          <motion.div 
+          <motion.div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: 'url(https://pgklcwsrwsenbcboggbb.supabase.co/storage/v1/object/public/product-images/hero_glue.png)' }}
             initial={{ scale: 1.05 }}
@@ -23,7 +33,7 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-20 flex flex-col items-center text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pt-20 pb-16">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -31,8 +41,8 @@ export default function Home() {
           >
             Advanced Adhesive <br className="hidden sm:block" /> Solutions
           </motion.h1>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -40,8 +50,8 @@ export default function Home() {
           >
             DONPACK ADHESIVES delivers innovative, high-performance hot-melt technology tailored for demanding industrial and packaging applications worldwide.
           </motion.p>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -50,7 +60,7 @@ export default function Home() {
             <a href="#products" className="bg-brand-navy hover:bg-slate-800 text-white px-8 py-4 rounded font-bold text-lg transition-colors shadow-lg">
               Explore Products
             </a>
-            <button 
+            <button
               onClick={() => setQuoteModalOpen(true)}
               className="bg-brand-navy hover:bg-slate-800 text-white px-8 py-4 rounded font-bold text-lg transition-colors shadow-lg border border-brand-navy"
             >
@@ -59,7 +69,7 @@ export default function Home() {
           </motion.div>
 
           {/* Feature Icons Row */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -81,7 +91,7 @@ export default function Home() {
         </div>
 
         {/* Trust Badge (Bottom corner) */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -97,12 +107,153 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* Promotional Flyers - Masonry Grid */}
+      <section className="bg-white py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">Latest Updates & Promotions</h2>
+            <div className="h-1 w-20 bg-brand-green mx-auto rounded-full"></div>
+          </motion.div>
 
+          {/* 
+            MASONRY GRID CONTAINER 
+            Change columns-1 to columns-2 etc. based on how many you want side by side.
+          */}
+          {flyers.length > 0 ? (
+            <div 
+              className="relative w-full max-w-5xl mx-auto h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden" 
+              style={{ perspective: '1000px' }}
+            >
+              <AnimatePresence initial={false}>
+                {flyers.map((flyer, index) => {
+                  const isActive = index === activeFlyerIndex;
+                  const isPrev = index === (activeFlyerIndex - 1 + flyers.length) % flyers.length;
+                  const isNext = index === (activeFlyerIndex + 1) % flyers.length;
+
+                  // Hide items that are not adjacent if there are many flyers
+                  if (!isActive && !isPrev && !isNext && flyers.length > 3) return null;
+
+                  let x = "0%";
+                  let z = 0;
+                  let rotateY = 0;
+                  let opacity = 1;
+                  let scale = 1;
+
+                  if (isActive) {
+                    x = "0%";
+                    z = 0;
+                    rotateY = 0;
+                    scale = 1;
+                    opacity = 1;
+                  } else if (isPrev) {
+                    x = "-70%";
+                    z = -200;
+                    rotateY = 35;
+                    scale = 0.8;
+                    opacity = 0.6;
+                  } else if (isNext) {
+                    x = "70%";
+                    z = -200;
+                    rotateY = -35;
+                    scale = 0.8;
+                    opacity = 0.6;
+                  } else {
+                    opacity = 0;
+                    scale = 0.5;
+                  }
+
+                  return (
+                    <motion.div
+                      key={flyer.id}
+                      className="absolute flex items-center justify-center cursor-pointer"
+                      initial={false}
+                      animate={{
+                        x,
+                        z,
+                        rotateY,
+                        scale,
+                        opacity,
+                        zIndex: isActive ? 50 : 40
+                      }}
+                      transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                      onClick={() => {
+                        if (isActive) {
+                          setZoomedFlyer(flyer.image_url);
+                        } else {
+                          setActiveFlyerIndex(index);
+                        }
+                      }}
+                    >
+                      <img 
+                        src={flyer.image_url} 
+                        alt="Promotional Flyer" 
+                        className="max-h-[350px] sm:max-h-[450px] md:max-h-[550px] max-w-[80vw] sm:max-w-[85vw] md:max-w-none w-auto h-auto rounded-xl shadow-[0_15px_35px_rgba(0,0,0,0.3)]"
+                      />
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+
+              {/* Navigation Arrows */}
+              {flyers.length > 1 && (
+                <>
+                  <button 
+                    onClick={() => setActiveFlyerIndex(prev => (prev - 1 + flyers.length) % flyers.length)}
+                    className="absolute left-2 sm:left-8 z-50 bg-white/80 hover:bg-white text-brand-navy p-3 sm:p-4 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.2)] backdrop-blur transition-all hover:scale-110"
+                    aria-label="Previous"
+                  >
+                    <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8" />
+                  </button>
+                  <button 
+                    onClick={() => setActiveFlyerIndex(prev => (prev + 1) % flyers.length)}
+                    className="absolute right-2 sm:right-8 z-50 bg-white/80 hover:bg-white text-brand-navy p-3 sm:p-4 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.2)] backdrop-blur transition-all hover:scale-110"
+                    aria-label="Next"
+                  >
+                    <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8" />
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <p className="text-center text-slate-500 italic">Watch this space for our latest updates and promotions!</p>
+          )}
+        </div>
+
+        {/* Pinterest-style Zoom Modal */}
+        <AnimatePresence>
+          {zoomedFlyer && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setZoomedFlyer(null)}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-8 cursor-zoom-out"
+            >
+              <motion.img
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                src={zoomedFlyer}
+                alt="Zoomed Flyer"
+                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl cursor-default"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
 
       {/* Solutions Section Placeholder */}
       <section id="solutions" className="bg-brand-bg py-16 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-24 overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -114,10 +265,10 @@ export default function Home() {
               We cater to a wide spectrum of industrial sectors, providing specialized adhesive solutions engineered for performance and reliability.
             </p>
           </motion.div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Solution 1 */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -141,7 +292,7 @@ export default function Home() {
             </motion.div>
 
             {/* Solution 2 */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -165,7 +316,7 @@ export default function Home() {
             </motion.div>
 
             {/* Solution 3 */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -189,7 +340,7 @@ export default function Home() {
             </motion.div>
 
             {/* Solution 4 */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -213,7 +364,7 @@ export default function Home() {
             </motion.div>
 
             {/* Solution 5 */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -237,7 +388,7 @@ export default function Home() {
             </motion.div>
 
             {/* Solution 6 */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

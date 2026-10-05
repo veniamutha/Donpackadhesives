@@ -10,6 +10,15 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
+  // Derive product type category from name/apps
+  const getProductCategory = (product: Product): string => {
+    const name = product.name.toLowerCase();
+    if (product.apps.includes('Guns') || name.includes('gun')) return 'Glue Guns';
+    if (name.includes('stick')) return 'Glue Sticks';
+    return 'Hot Melt Adhesives';
+  };
+  const PRODUCT_CATEGORIES = ['Glue Sticks', 'Hot Melt Adhesives', 'Glue Guns'] as const;
+
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -52,17 +61,17 @@ export default function Products() {
         {/* Filter Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {[
-            { name: 'All', icon: LayoutGrid },
-            { name: 'Packaging', icon: Box },
-            { name: 'Furniture', icon: Armchair },
-            { name: 'Glue Guns', icon: PenTool },
+            { label: 'All',       value: 'All',       icon: LayoutGrid },
+            { label: 'Packaging', value: 'Packaging', icon: Box },
+            { label: 'Furniture', value: 'Furniture', icon: Armchair },
+            { label: 'Glue Guns', value: 'Guns',      icon: PenTool },
           ].map((app) => {
             const Icon = app.icon;
-            const isSelected = selectedApplication === app.name;
+            const isSelected = selectedApplication === app.value;
             return (
               <button
-                key={app.name}
-                onClick={() => setApplication(app.name as any)}
+                key={app.value}
+                onClick={() => setApplication(app.value as any)}
                 className={`p-3 sm:p-6 rounded-xl border-2 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-all ${
                   isSelected 
                     ? 'border-brand-green bg-green-50 shadow-md transform -translate-y-1' 
@@ -70,7 +79,7 @@ export default function Products() {
                 }`}
               >
                 <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${isSelected ? 'text-brand-green' : 'text-slate-400'}`} />
-                <span className={`font-bold text-sm sm:text-base ${isSelected ? 'text-brand-navy' : 'text-slate-600'}`}>{app.name}</span>
+                <span className={`font-bold text-sm sm:text-base ${isSelected ? 'text-brand-navy' : 'text-slate-600'}`}>{app.label}</span>
               </button>
             )
           })}
@@ -99,53 +108,74 @@ export default function Products() {
             <p>No products found for this category.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <motion.div 
-              key={product.id} 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group flex flex-col h-full hover:shadow-md transition-all hover:border-slate-200"
-            >
-              <div 
-                className="h-48 relative bg-slate-50 border-b border-slate-100 overflow-hidden cursor-pointer" 
-                onClick={() => handleOpenModal(product)}
-              >
-                {/* Product Image (Primary) */}
-                <img 
-                  src={product.images[0]} 
-                  alt={product.name} 
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
-                {/* Image Count Badge */}
-                {product.images.length > 1 && (
-                  <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-bold px-2 py-1 rounded-md">
-                    1/{product.images.length}
-                  </div>
-                )}
-              </div>
-              <div className="p-6 flex flex-col flex-1">
-                <div className="flex gap-2 mb-3 flex-wrap">
-                  {product.apps.filter(a => a !== 'All').map(app => (
-                    <span key={app} className="text-[10px] uppercase font-bold tracking-wider text-brand-green bg-green-50/80 px-2 py-1 rounded">
-                      {app}
+          <div className="space-y-14">
+            {PRODUCT_CATEGORIES.map((category) => {
+              const categoryItems = filteredProducts.filter(p => getProductCategory(p) === category);
+              if (categoryItems.length === 0) return null;
+              return (
+                <section key={category}>
+                  {/* Category Header */}
+                  <div className="flex items-center gap-4 mb-7">
+                    <div className="h-8 w-1.5 rounded-full bg-brand-green flex-shrink-0" />
+                    <h3 className="text-lg sm:text-xl font-extrabold text-brand-navy whitespace-nowrap tracking-tight">
+                      {category}
+                    </h3>
+                    <div className="flex-1 h-px bg-slate-200" />
+                    <span className="flex-shrink-0 text-xs font-bold text-brand-green bg-green-50 border border-green-100 px-3 py-1.5 rounded-full">
+                      {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                     </span>
-                  ))}
-                </div>
-                <h4 className="text-lg font-bold text-brand-navy mb-2 line-clamp-2">{product.name}</h4>
-                <p className="text-sm text-slate-600 mb-6 line-clamp-3 flex-1">{product.desc}</p>
-                <button 
-                  onClick={() => handleOpenModal(product)}
-                  className="w-full py-2.5 mt-auto bg-slate-50 hover:bg-brand-navy hover:text-white text-brand-navy font-medium rounded transition-colors text-sm border border-slate-200 hover:border-brand-navy flex items-center justify-center gap-2"
-                >
-                  View Data Sheet <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          ))}
+                  </div>
+
+                  {/* Product Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {categoryItems.map((product) => (
+                      <motion.div
+                        key={product.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-50px' }}
+                        transition={{ duration: 0.5 }}
+                        className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group flex flex-col h-full hover:shadow-md transition-all hover:border-slate-200"
+                      >
+                        <div
+                          className="h-48 relative bg-slate-50 border-b border-slate-100 overflow-hidden cursor-pointer"
+                          onClick={() => handleOpenModal(product)}
+                        >
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {product.images.length > 1 && (
+                            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-bold px-2 py-1 rounded-md">
+                              1/{product.images.length}
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-6 flex flex-col flex-1">
+                          <div className="flex gap-2 mb-3 flex-wrap">
+                            {product.apps.filter(a => a !== 'All').map(app => (
+                              <span key={app} className="text-[10px] uppercase font-bold tracking-wider text-brand-green bg-green-50/80 px-2 py-1 rounded">
+                                {app}
+                              </span>
+                            ))}
+                          </div>
+                          <h4 className="text-lg font-bold text-brand-navy mb-2 line-clamp-2">{product.name}</h4>
+                          <p className="text-sm text-slate-600 mb-6 line-clamp-3 flex-1">{product.desc}</p>
+                          <button
+                            onClick={() => handleOpenModal(product)}
+                            className="w-full py-2.5 mt-auto bg-slate-50 hover:bg-brand-navy hover:text-white text-brand-navy font-medium rounded transition-colors text-sm border border-slate-200 hover:border-brand-navy flex items-center justify-center gap-2"
+                          >
+                            View Data Sheet <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         )}
       </div>
