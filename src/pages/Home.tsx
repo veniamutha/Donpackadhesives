@@ -12,7 +12,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <motion.div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: 'url(/images/hero_glue.png)' }}
+            style={{ backgroundImage: 'url(https://pgklcwsrwsenbcboggbb.supabase.co/storage/v1/object/public/product-images/hero_glue.png)' }}
             initial={{ scale: 1.05 }}
             animate={{ scale: 1.15 }}
             transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}

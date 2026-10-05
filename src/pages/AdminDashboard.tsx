@@ -34,14 +34,23 @@ export default function AdminDashboard() {
   const handleDelete = async (id: string, productImages: string[]) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
-      // Extract file paths from URLs to delete from storage if needed
-      // Simplest: just delete record, storage can be cleaned up manually or via trigger
-      // but let's try to delete images
+      // Correctly extract the storage path from the full Supabase public URL
+      // e.g. https://xxx.supabase.co/storage/v1/object/public/product-images/filename.png
+      // => path is just "filename.png"
+      const BUCKET = 'product-images';
+      const marker = `/object/public/${BUCKET}/`;
+      const pathsToDelete: string[] = [];
       for (const url of productImages) {
-        const path = url.split('/').pop();
-        if (path) {
-          await supabase.storage.from('product-images').remove([path]);
+        if (url.includes(marker)) {
+          pathsToDelete.push(url.split(marker)[1]);
+        } else {
+          // Fallback for any legacy paths
+          const fallback = url.split('/').pop();
+          if (fallback) pathsToDelete.push(fallback);
         }
+      }
+      if (pathsToDelete.length > 0) {
+        await supabase.storage.from(BUCKET).remove(pathsToDelete);
       }
 
       const { error } = await supabase.from('products').delete().eq('id', id);
