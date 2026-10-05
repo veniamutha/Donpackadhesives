@@ -5,23 +5,24 @@ import { useProductStore, type Product } from '../store/useProductStore';
 import { useUIStore } from '../store/useUIStore';
 
 export default function Products() {
-  const { selectedApplication, setApplication, products, isLoading, error, fetchProducts } = useProductStore();
+  const { selectedApplication, setApplication, products, categories, isLoading, error, fetchProducts, fetchCategories } = useProductStore();
   const { setQuoteModalOpen } = useUIStore();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Derive product type category from name/apps
+  // Grouping categories based on the database
   const getProductCategory = (product: Product): string => {
-    const name = product.name.toLowerCase();
-    if (product.apps.includes('Guns') || name.includes('gun')) return 'Glue Guns';
-    if (name.includes('stick')) return 'Glue Sticks';
-    return 'Hot Melt Adhesives';
+    return product.category || 'Others';
   };
-  const PRODUCT_CATEGORIES = ['Glue Sticks', 'Hot Melt Adhesives', 'Glue Guns'] as const;
+
+  // Get a unique list of all categories that actually have products in them (to avoid empty sections)
+  // or we can just iterate over `categories` from the store.
+  const PRODUCT_CATEGORIES = categories.map(c => c.name);
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+    fetchCategories();
+  }, [fetchProducts, fetchCategories]);
 
   const filteredProducts = selectedApplication === 'All' 
     ? products 

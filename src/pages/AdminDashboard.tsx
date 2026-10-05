@@ -3,14 +3,14 @@ import { supabase } from '../lib/supabase';
 import { useProductStore } from '../store/useProductStore';
 import { useFlyerStore } from '../store/useFlyerStore';
 import { useUIStore } from '../store/useUIStore';
-import { LogOut, Plus, Trash2, Image as ImageIcon, Loader2, Lock, X, LayoutGrid, Image as FlyerIcon } from 'lucide-react';
+import { LogOut, Plus, Trash2, Image as ImageIcon, Loader2, Lock, X, LayoutGrid, Image as FlyerIcon, Tags } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { setAdmin } = useUIStore();
-  const { products, fetchProducts, isLoading: productsLoading } = useProductStore();
+  const { products, fetchProducts, isLoading: productsLoading, categories, fetchCategories } = useProductStore();
   const { flyers, fetchFlyers, isLoading: flyersLoading } = useFlyerStore();
   
-  const [activeTab, setActiveTab] = useState<'products' | 'flyers'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'flyers' | 'categories'>('products');
   
   // Product State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -29,15 +29,21 @@ export default function AdminDashboard() {
   const [longDesc, setLongDesc] = useState('');
   const [apps, setApps] = useState<string[]>(['All']);
   const [specs, setSpecs] = useState<{key: string, value: string}[]>([]);
+  const [category, setCategory] = useState('Others');
   const [images, setImages] = useState<File[]>([]); 
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]); 
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]); 
   const [submitting, setSubmitting] = useState(false);
 
+  // Categories State
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+
   useEffect(() => {
     fetchProducts();
     fetchFlyers();
-  }, [fetchProducts, fetchFlyers]);
+    fetchCategories();
+  }, [fetchProducts, fetchFlyers, fetchCategories]);
 
   const handleLogout = () => {
     setAdmin(false);
@@ -111,6 +117,34 @@ export default function AdminDashboard() {
     }
   };
 
+  /* ================= CATEGORY FUNCTIONS ================= */
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+    setIsCreatingCategory(true);
+    try {
+      const { error } = await supabase.from('categories').insert({ name: newCategoryName.trim() });
+      if (error) throw error;
+      setNewCategoryName('');
+      fetchCategories();
+    } catch (err: any) {
+      alert('Error creating category: ' + err.message);
+    } finally {
+      setIsCreatingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this category? Products using it will retain the text, but it will be removed from this list.')) return;
+    try {
+      const { error } = await supabase.from('categories').delete().eq('id', id);
+      if (error) throw error;
+      fetchCategories();
+    } catch (err: any) {
+      alert('Error deleting category: ' + err.message);
+    }
+  };
+
   /* ================= PRODUCT FUNCTIONS ================= */
   const handleDelete = async (id: string, productImages: string[]) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
@@ -143,6 +177,7 @@ export default function AdminDashboard() {
     setName('');
     setDesc('');
     setLongDesc('');
+    setCategory(categories[0]?.name || 'Others');
     setApps(['All']);
     setSpecs([]);
     setImages([]);
@@ -156,6 +191,7 @@ export default function AdminDashboard() {
     setName(product.name);
     setDesc(product.desc);
     setLongDesc(product.longDesc || '');
+    setCategory(product.category || 'Others');
     setApps(product.apps);
     
     const formattedSpecs = Object.entries(product.specs || {}).map(([key, value]) => ({ key, value: String(value) }));
@@ -249,6 +285,7 @@ export default function AdminDashboard() {
         desc,
         longDesc,
         apps,
+        category,
         specs: specsJson,
         images: finalImageUrls
       };
@@ -266,6 +303,7 @@ export default function AdminDashboard() {
       setDesc('');
       setLongDesc('');
       setApps(['All']);
+      setCategory('Others');
       setSpecs([]);
       setImages([]);
       setImagePreviewUrls([]);
@@ -312,6 +350,12 @@ export default function AdminDashboard() {
           >
             <FlyerIcon className="w-5 h-5" /> Manage Flyers
           </button>
+          <button 
+            onClick={() => { setActiveTab('categories'); setIsFormOpen(false); }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'categories' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
+          >
+            <Tags className="w-5 h-5" /> Manage Categories
+          </button>
         </div>
 
         {activeTab === 'products' ? (
@@ -338,6 +382,7 @@ export default function AdminDashboard() {
                       <img src={product.images[0]} alt={product.name} className="w-full h-48 object-cover bg-slate-100" />
                       <div className="p-4 flex flex-col flex-1">
                         <h3 className="font-bold text-lg mb-1">{product.name}</h3>
+                        <p className="text-xs font-semibold text-brand-green mb-2 px-2 py-1 bg-brand-green/10 inline-block rounded w-fit">{product.category || 'Uncategorized'}</p>
                         <p className="text-slate-500 text-sm mb-4 line-clamp-2">{product.desc}</p>
                         
                         <div className="mt-auto flex gap-2">
@@ -369,6 +414,16 @@ export default function AdminDashboard() {
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Product Name *</label>
                   <input required value={name} onChange={e => setName(e.target.value)} className="w-full p-3 border border-slate-300 rounded focus:ring-2 focus:ring-brand-green focus:border-brand-green" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Category *</label>
+                  <select required value={category} onChange={e => setCategory(e.target.value)} className="w-full p-3 border border-slate-300 rounded focus:ring-2 focus:ring-brand-green focus:border-brand-green bg-white">
+                    <option value="" disabled>Select a category</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -464,7 +519,7 @@ export default function AdminDashboard() {
               </form>
             </div>
           )
-        ) : (
+        ) : activeTab === 'flyers' ? (
           /* ================= FLYERS VIEW ================= */
           <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
@@ -540,6 +595,47 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        ) : (
+          /* ================= CATEGORIES VIEW ================= */
+          <div className="space-y-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-2xl">
+              <h2 className="text-xl font-bold mb-6 border-b pb-4">Create New Category</h2>
+              <form onSubmit={handleCreateCategory} className="flex gap-4">
+                <input 
+                  required
+                  value={newCategoryName} 
+                  onChange={e => setNewCategoryName(e.target.value)} 
+                  placeholder="e.g. Liquid Adhesives"
+                  className="flex-1 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-brand-green" 
+                />
+                <button 
+                  type="submit" 
+                  disabled={isCreatingCategory || !newCategoryName.trim()} 
+                  className="px-6 py-3 bg-brand-navy hover:bg-slate-800 text-white rounded-lg font-bold shadow-md disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+                >
+                  {isCreatingCategory ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />} Add
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-extrabold text-slate-800 mb-4">Existing Categories ({categories.length})</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {categories.map(cat => (
+                  <div key={cat.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center group">
+                    <span className="font-semibold text-slate-800">{cat.name}</span>
+                    <button 
+                      onClick={() => handleDeleteCategory(cat.id)}
+                      className="p-2 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100"
+                      title="Delete Category"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
