@@ -1,6 +1,7 @@
 import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUIStore } from '../store/useUIStore';
 import { useFlyerStore } from '../store/useFlyerStore';
 
@@ -57,9 +58,9 @@ export default function Home() {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="flex flex-col sm:flex-row gap-4 mb-16 w-full sm:w-auto"
           >
-            <a href="#products" className="bg-brand-navy hover:bg-slate-800 text-white px-8 py-4 rounded font-bold text-lg transition-colors shadow-lg">
+            <Link to="/products" className="bg-brand-navy hover:bg-slate-800 text-white px-8 py-4 rounded font-bold text-lg transition-colors shadow-lg">
               Explore Products
-            </a>
+            </Link>
             <button
               onClick={() => setQuoteModalOpen(true)}
               className="bg-brand-navy hover:bg-slate-800 text-white px-8 py-4 rounded font-bold text-lg transition-colors shadow-lg border border-brand-navy"

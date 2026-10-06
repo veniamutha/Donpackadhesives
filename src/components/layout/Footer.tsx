@@ -7,10 +7,10 @@ export default function Footer() {
 
   return (
     <footer className="bg-brand-navy text-white pt-12 sm:pt-16 pb-24 md:pb-12 px-4 sm:px-8 md:px-16 lg:px-24">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
         
         {/* Brand Column */}
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start md:col-span-1">
           <div className="bg-white p-3 rounded-2xl inline-flex items-center justify-center mb-6 shadow-xl shadow-black/20">
             <img src="/logo.jpg" alt="DonPack Adhesives Logo" className="h-16 w-16 object-contain" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
           </div>
@@ -34,6 +34,16 @@ export default function Footer() {
                 IndiaMART Profile <ExternalLink className="w-4 h-4" />
               </a>
             </li>
+          </ul>
+        </div>
+
+        {/* Applications Column */}
+        <div>
+          <h3 className="text-lg font-semibold mb-6">Applications</h3>
+          <ul className="space-y-4 text-slate-300">
+            <li><Link to="/applications/carton-sealing" className="hover:text-brand-green transition-colors">Carton Sealing</Link></li>
+            <li><Link to="/applications/furniture-manufacturing" className="hover:text-brand-green transition-colors">Furniture & Mattress</Link></li>
+            <li><Link to="/applications/industrial-glue-guns" className="hover:text-brand-green transition-colors">Industrial Glue Guns</Link></li>
           </ul>
         </div>
 
