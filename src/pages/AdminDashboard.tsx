@@ -1,16 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useProductStore } from '../store/useProductStore';
 import { useFlyerStore } from '../store/useFlyerStore';
 import { useUIStore } from '../store/useUIStore';
-import { LogOut, Plus, Trash2, Image as ImageIcon, Loader2, Lock, X, LayoutGrid, Image as FlyerIcon, Tags } from 'lucide-react';
+import { useSolutionStore } from '../store/useSolutionStore';
+import type { Solution } from '../store/useSolutionStore';
+import { useCompanyStore } from '../store/useCompanyStore';
+import { LogOut, Plus, Trash2, Image as ImageIcon, Loader2, Lock, X, LayoutGrid, Image as FlyerIcon, Tags, Briefcase, Phone } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { setAdmin } = useUIStore();
   const { products, fetchProducts, isLoading: productsLoading, categories, fetchCategories } = useProductStore();
   const { flyers, fetchFlyers, isLoading: flyersLoading } = useFlyerStore();
+  const { solutions, fetchSolutions, isLoading: solutionsLoading } = useSolutionStore();
+  const { info: companyInfo, updateInfo: updateCompanyInfo, isLoading: companyLoading } = useCompanyStore();
   
-  const [activeTab, setActiveTab] = useState<'products' | 'flyers' | 'categories'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'flyers' | 'categories' | 'solutions' | 'contact'>('products');
+
+  // Contact Info State
+  const [contactPhone, setContactPhone] = useState(companyInfo.phone);
+  const [contactEmail, setContactEmail] = useState(companyInfo.email);
+  const [contactAddress, setContactAddress] = useState(companyInfo.address);
+  const [contactWorkingHours, setContactWorkingHours] = useState(companyInfo.working_hours);
+  const [contactSubmitting, setContactSubmitting] = useState(false);
   
   // Product State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -38,11 +50,31 @@ export default function AdminDashboard() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
 
+  // Solutions State
+  const [isSolFormOpen, setIsSolFormOpen] = useState(false);
+  const [editingSolId, setEditingSolId] = useState<string | null>(null);
+  const [solTitle, setSolTitle] = useState('');
+  const [solDesc, setSolDesc] = useState('');
+  const [solIcon, setSolIcon] = useState('Box');
+  const [solImageUrl, setSolImageUrl] = useState('');
+  const [solImageFile, setSolImageFile] = useState<File | null>(null);
+  const [solImageFilePreview, setSolImageFilePreview] = useState<string | null>(null);
+  const [solSubmitting, setSolSubmitting] = useState(false);
+  const solFileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchProducts();
     fetchFlyers();
     fetchCategories();
-  }, [fetchProducts, fetchFlyers, fetchCategories]);
+    fetchSolutions();
+  }, [fetchProducts, fetchFlyers, fetchCategories, fetchSolutions]);
+
+  useEffect(() => {
+    setContactPhone(companyInfo.phone);
+    setContactEmail(companyInfo.email);
+    setContactAddress(companyInfo.address);
+    setContactWorkingHours(companyInfo.working_hours);
+  }, [companyInfo]);
 
   const handleLogout = () => {
     setAdmin(false);
@@ -185,6 +217,142 @@ export default function AdminDashboard() {
       alert('Error deleting product: ' + err.message);
     }
   };
+  // Solutions Handlers
+  const openSolCreateForm = () => {
+    setEditingSolId(null);
+    setSolTitle('');
+    setSolDesc('');
+    setSolIcon('Box');
+    setSolImageUrl('');
+    setSolImageFile(null);
+    setSolImageFilePreview(null);
+    if (solFileInputRef.current) solFileInputRef.current.value = '';
+    setIsSolFormOpen(true);
+  };
+
+  const openSolEditForm = (sol: Solution) => {
+    setEditingSolId(sol.id);
+    setSolTitle(sol.title);
+    setSolDesc(sol.description);
+    setSolIcon(sol.icon_name);
+    setSolImageUrl(sol.image_url || '');
+    setSolImageFile(null);
+    setSolImageFilePreview(sol.image_file_path || null);
+    if (solFileInputRef.current) solFileInputRef.current.value = '';
+    setIsSolFormOpen(true);
+  };
+
+  const handleSolImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSolImageFile(file);
+      setSolImageFilePreview(URL.createObjectURL(file));
+      // Clear URL if they pick a file, to avoid confusion
+      setSolImageUrl('');
+    }
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactSubmitting(true);
+    try {
+      await updateCompanyInfo({
+        phone: contactPhone,
+        email: contactEmail,
+        address: contactAddress,
+        working_hours: contactWorkingHours,
+      });
+      alert('Contact info updated successfully!');
+    } catch (err: any) {
+      alert('Error updating contact info: ' + err.message);
+    } finally {
+      setContactSubmitting(false);
+    }
+  };
+
+  const handleSolSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSolSubmitting(true);
+    try {
+      const oldFilePath = editingSolId ? solutions.find(s => s.id === editingSolId)?.image_file_path : null;
+      let finalFilePath = oldFilePath;
+      if (!solImageFilePreview && !solImageFile) {
+        finalFilePath = null;
+      }
+
+      if (solImageFile) {
+        const fileExt = solImageFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const { error } = await supabase.storage
+          .from('solutions')
+          .upload(fileName, solImageFile);
+          
+        if (error) throw error;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('solutions')
+          .getPublicUrl(fileName);
+          
+        finalFilePath = publicUrl;
+      }
+
+      if (oldFilePath && finalFilePath !== oldFilePath) {
+        const oldFileName = oldFilePath.split('/').pop();
+        if (oldFileName) {
+          await supabase.storage.from('solutions').remove([oldFileName]);
+        }
+      }
+
+      const solData = {
+        title: solTitle,
+        description: solDesc,
+        icon_name: solIcon,
+        image_url: solImageUrl || null,
+        image_file_path: finalFilePath
+      };
+
+      if (editingSolId) {
+        const { error } = await supabase
+          .from('industry_solutions')
+          .update(solData)
+          .eq('id', editingSolId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('industry_solutions')
+          .insert([solData]);
+        if (error) throw error;
+      }
+
+      await fetchSolutions();
+      setIsSolFormOpen(false);
+    } catch (err: any) {
+      alert(err.message || 'Error saving solution');
+    } finally {
+      setSolSubmitting(false);
+    }
+  };
+
+  const handleSolDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this solution?')) {
+      try {
+        const sol = solutions.find(s => s.id === id);
+        if (sol?.image_file_path) {
+          const oldFileName = sol.image_file_path.split('/').pop();
+          if (oldFileName) {
+            await supabase.storage.from('solutions').remove([oldFileName]);
+          }
+        }
+        const { error } = await supabase.from('industry_solutions').delete().eq('id', id);
+        if (error) throw error;
+        await fetchSolutions();
+      } catch (err: any) {
+        alert(err.message || 'Error deleting solution');
+      }
+    }
+  };
+
+  const ICONS = ['Box', 'Layers', 'ShoppingBag', 'BedDouble', 'Tag', 'HeartHandshake', 'Truck', 'Settings', 'Shield', 'Factory'];
 
   const openCreateForm = () => {
     setEditingProductId(null);
@@ -294,6 +462,27 @@ export default function AdminDashboard() {
       };
 
       if (editingProductId) {
+        const oldProduct = products.find(p => p.id === editingProductId);
+        if (oldProduct && oldProduct.images) {
+          const removedImages = oldProduct.images.filter(url => !existingImageUrls.includes(url));
+          if (removedImages.length > 0) {
+            const BUCKET = 'product-images';
+            const marker = `/object/public/${BUCKET}/`;
+            const pathsToDelete: string[] = [];
+            for (const url of removedImages) {
+              if (url.includes(marker)) {
+                pathsToDelete.push(url.split(marker)[1]);
+              } else {
+                const fallback = url.split('/').pop();
+                if (fallback) pathsToDelete.push(fallback);
+              }
+            }
+            if (pathsToDelete.length > 0) {
+              await supabase.storage.from(BUCKET).remove(pathsToDelete);
+            }
+          }
+        }
+        
         const { error: dbError } = await supabase.from('products').update(productData).eq('id', editingProductId);
         if (dbError) throw dbError;
       } else {
@@ -341,22 +530,34 @@ export default function AdminDashboard() {
         {/* Navigation Tabs */}
         <div className="flex gap-4 mb-8 border-b border-slate-200 pb-4 overflow-x-auto">
           <button 
-            onClick={() => { setActiveTab('products'); setIsFormOpen(false); }}
+            onClick={() => { setActiveTab('products'); setIsFormOpen(false); setIsSolFormOpen(false); }}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'products' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
           >
             <LayoutGrid className="w-5 h-5" /> Manage Products
           </button>
           <button 
-            onClick={() => { setActiveTab('flyers'); setIsFormOpen(false); }}
+            onClick={() => { setActiveTab('flyers'); setIsFormOpen(false); setIsSolFormOpen(false); }}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'flyers' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
           >
             <FlyerIcon className="w-5 h-5" /> Manage Flyers
           </button>
           <button 
-            onClick={() => { setActiveTab('categories'); setIsFormOpen(false); }}
+            onClick={() => { setActiveTab('categories'); setIsFormOpen(false); setIsSolFormOpen(false); }}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'categories' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
           >
             <Tags className="w-5 h-5" /> Manage Categories
+          </button>
+          <button 
+            onClick={() => { setActiveTab('solutions'); setIsFormOpen(false); setIsSolFormOpen(false); }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'solutions' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
+          >
+            <Briefcase className="w-5 h-5" /> Manage Solutions
+          </button>
+          <button 
+            onClick={() => { setActiveTab('contact'); setIsFormOpen(false); setIsSolFormOpen(false); }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'contact' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
+          >
+            <Phone className="w-5 h-5" /> Manage Contact Info
           </button>
         </div>
 
@@ -584,7 +785,7 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'categories' ? (
           /* ================= CATEGORIES VIEW ================= */
           <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-2xl">
@@ -625,7 +826,262 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-        )}
+        ) : activeTab === 'solutions' ? (
+          !isSolFormOpen ? (
+            <>
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-3xl font-extrabold text-slate-800">Solutions ({solutions.length})</h2>
+                <button 
+                  onClick={openSolCreateForm}
+                  className="bg-brand-green hover:bg-green-500 text-brand-navy px-6 py-3 rounded-lg font-bold flex items-center gap-2 transition-colors shadow-sm"
+                >
+                  <Plus className="w-5 h-5" /> Add New Solution
+                </button>
+              </div>
+
+              {solutionsLoading ? (
+                <div className="flex justify-center p-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-brand-green" />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {solutions.map(sol => (
+                    <div key={sol.id} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                      <img src={sol.image_file_path || sol.image_url || 'https://via.placeholder.com/800x400?text=No+Image'} alt={sol.title} className="w-full h-48 object-cover bg-slate-100" />
+                      <div className="p-4 flex flex-col flex-1">
+                        <h3 className="font-bold text-lg mb-1">{sol.title}</h3>
+                        <p className="text-sm text-slate-500 mb-4 flex-1 line-clamp-3">{sol.description}</p>
+                        
+                        <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-100">
+                          <button 
+                            onClick={() => openSolEditForm(sol)}
+                            className="text-brand-navy hover:text-brand-green font-semibold text-sm transition-colors"
+                          >
+                            Edit Details
+                          </button>
+                          <button 
+                            onClick={() => handleSolDelete(sol.id)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete Solution"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl mx-auto border border-slate-100">
+              <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                <h2 className="text-2xl font-extrabold text-slate-800">
+                  {editingSolId ? 'Edit Solution' : 'Add New Solution'}
+                </h2>
+                <button 
+                  onClick={() => setIsSolFormOpen(false)}
+                  className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6 text-slate-500" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSolSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Title</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={solTitle}
+                    onChange={e => setSolTitle(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-brand-navy focus:ring-1 focus:ring-brand-navy outline-none transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Description</label>
+                  <textarea 
+                    required 
+                    rows={3}
+                    value={solDesc}
+                    onChange={e => setSolDesc(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-brand-navy focus:ring-1 focus:ring-brand-navy outline-none transition-all resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Icon</label>
+                  <select 
+                    value={solIcon}
+                    onChange={e => setSolIcon(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-brand-navy focus:ring-1 focus:ring-brand-navy outline-none transition-all appearance-none bg-white"
+                  >
+                    {ICONS.map(icon => (
+                      <option key={icon} value={icon}>{icon}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="border-t border-slate-100 pt-6 mt-6">
+                  <h3 className="text-sm font-bold text-slate-700 mb-4">Image Source (Choose One)</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-2">Upload Image File</label>
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        ref={solFileInputRef}
+                        onChange={handleSolImageSelect}
+                        className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-green/10 file:text-brand-navy hover:file:bg-brand-green/20 transition-all cursor-pointer"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-4 my-2">
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">OR</span>
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-600 mb-2">Image URL</label>
+                      <input 
+                        type="url" 
+                        value={solImageUrl}
+                        onChange={e => {
+                          setSolImageUrl(e.target.value);
+                          if (e.target.value) {
+                            setSolImageFile(null);
+                            setSolImageFilePreview(null);
+                            if (solFileInputRef.current) {
+                              solFileInputRef.current.value = '';
+                            }
+                          }
+                        }}
+                        placeholder="https://..."
+                        className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-brand-navy focus:ring-1 focus:ring-brand-navy outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Image Preview */}
+                  {(solImageFilePreview || solImageUrl) && (
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Preview:</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSolImageFile(null);
+                            setSolImageFilePreview(null);
+                            setSolImageUrl('');
+                            if (solFileInputRef.current) {
+                              solFileInputRef.current.value = '';
+                            }
+                          }}
+                          className="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1"
+                        >
+                          <X className="w-3 h-3" /> Clear Image
+                        </button>
+                      </div>
+                      <div className="w-full h-48 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 relative group">
+                        <img 
+                          src={solImageFilePreview || solImageUrl} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Invalid+Image+URL';
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-4 pt-6 mt-8 border-t border-slate-100">
+                  <button 
+                    type="button"
+                    onClick={() => setIsSolFormOpen(false)}
+                    className="flex-1 px-6 py-3 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-bold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={solSubmitting || (!solImageFile && !solImageUrl && !editingSolId)}
+                    className="flex-1 px-6 py-3 bg-brand-navy hover:bg-slate-800 text-white rounded-lg font-bold shadow-md disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {solSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                    {editingSolId ? 'Update Solution' : 'Save Solution'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )
+        ) : activeTab === 'contact' ? (
+          /* ================= CONTACT INFO VIEW ================= */
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-3xl font-extrabold text-slate-800 mb-8">Manage Contact Info</h2>
+            {companyLoading ? (
+              <div className="flex justify-center p-12">
+                <Loader2 className="w-8 h-8 text-brand-navy animate-spin" />
+              </div>
+            ) : (
+              <form onSubmit={handleContactSubmit} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Office Address</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={contactAddress}
+                    onChange={(e) => setContactAddress(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Working Hours</label>
+                  <input
+                    type="text"
+                    required
+                    value={contactWorkingHours}
+                    onChange={(e) => setContactWorkingHours(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
+                  />
+                </div>
+                
+                <button 
+                  type="submit"
+                  disabled={contactSubmitting}
+                  className="w-full px-6 py-3 bg-brand-navy hover:bg-slate-800 text-white rounded-lg font-bold shadow-md disabled:opacity-50 flex items-center justify-center gap-2 transition-colors mt-8"
+                >
+                  {contactSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                  Update Contact Info
+                </button>
+              </form>
+            )}
+          </div>
+        ) : null}
       </main>
     </div>
   );

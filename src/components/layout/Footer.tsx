@@ -1,13 +1,17 @@
-import { Mail, Phone, MapPin, Clock, ExternalLink, Lock } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, ExternalLink, Lock, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUIStore } from '../../store/useUIStore';
+import { useCompanyStore } from '../../store/useCompanyStore';
+import { useProductStore } from '../../store/useProductStore';
 
 export default function Footer() {
   const { setAdminLoginModalOpen } = useUIStore();
+  const { info } = useCompanyStore();
+  const { categories } = useProductStore();
 
   return (
     <footer className="bg-brand-navy text-white pt-12 sm:pt-16 pb-24 md:pb-12 px-4 sm:px-8 md:px-16 lg:px-24">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
         
         {/* Brand Column */}
         <div className="flex flex-col items-start md:col-span-2">
@@ -26,18 +30,33 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
           <ul className="space-y-4 text-slate-300">
-            <li><Link to="/" className="hover:text-brand-green transition-colors">Home</Link></li>
-            <li><Link to="/products" className="hover:text-brand-green transition-colors">Products</Link></li>
-            <li><Link to="/about" className="hover:text-brand-green transition-colors">About Us</Link></li>
+            <li><Link to="/" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> Home</Link></li>
+            <li><Link to="/products" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> Products</Link></li>
+            <li><Link to="/about" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> About Us</Link></li>
             <li>
               <a href="https://www.indiamart.com/donpack/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-brand-green transition-colors">
-                IndiaMART Profile <ExternalLink className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-brand-green" /> IndiaMART Profile <ExternalLink className="w-3 h-3 ml-1" />
               </a>
             </li>
           </ul>
         </div>
 
-
+        {/* Products Column */}
+        <div>
+          <h3 className="text-lg font-semibold mb-6">Products</h3>
+          <ul className="space-y-4 text-slate-300">
+            {categories.slice(0, 6).map((cat) => (
+              <li key={cat.id}>
+                <Link to={`/products?category=${encodeURIComponent(cat.name)}`} className="hover:text-brand-green transition-colors flex items-center gap-2">
+                  <ChevronRight className="w-4 h-4 text-brand-green" /> {cat.name}
+                </Link>
+              </li>
+            ))}
+            {categories.length === 0 && (
+              <li><Link to="/products" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> Hot Melt Adhesives</Link></li>
+            )}
+          </ul>
+        </div>
 
         {/* Contact Column */}
         <div>
@@ -45,23 +64,21 @@ export default function Footer() {
           <ul className="space-y-4 text-slate-300">
             <li className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-brand-green shrink-0 mt-0.5" />
-              <span>
-                42A, Duraisamy Street, 2nd Main Rd<br />
-                Rajiv Nagar, Vanagaram, Chennai<br />
-                Adayalampattu, Tamil Nadu 600077, India
+              <span className="whitespace-pre-line">
+                {info.address}
               </span>
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-5 h-5 text-brand-green shrink-0" />
-              <span>+91 97874 65677</span>
+              <span>{info.phone}</span>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-brand-green shrink-0" />
-              <a href="mailto:sales@donpack.in" className="hover:text-brand-green transition-colors">sales@donpack.in</a>
+              <a href={`mailto:${info.email}`} className="hover:text-brand-green transition-colors">{info.email}</a>
             </li>
             <li className="flex items-center gap-3">
               <Clock className="w-5 h-5 text-brand-green shrink-0" />
-              <span>10:00 - 18:30</span>
+              <span>{info.working_hours}</span>
             </li>
           </ul>
         </div>

@@ -1,19 +1,22 @@
-import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake, ChevronLeft, ChevronRight, Truck, Settings, Shield, Factory } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUIStore } from '../store/useUIStore';
 import { useFlyerStore } from '../store/useFlyerStore';
+import { useSolutionStore } from '../store/useSolutionStore';
 
 export default function Home() {
   const { setQuoteModalOpen } = useUIStore();
   const { flyers, fetchFlyers } = useFlyerStore();
+  const { solutions, fetchSolutions } = useSolutionStore();
   const [activeFlyerIndex, setActiveFlyerIndex] = useState(0);
   const [zoomedFlyer, setZoomedFlyer] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFlyers();
-  }, [fetchFlyers]);
+    fetchSolutions();
+  }, [fetchFlyers, fetchSolutions]);
 
   return (
     <div>
@@ -268,149 +271,41 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Solution 1 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              <div className="relative">
-                <div className="h-48 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&q=80&w=800" alt="Carton Sealing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
-                  <Box className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="p-8 pt-10">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Carton Sealing & Packaging</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  High-tack formulations ensuring secure, tamper-evident seals for boxes and heavy-duty corrugated cartons.
-                </p>
-              </div>
-            </motion.div>
+            {solutions.map((solution, index) => {
+              // Map icon name to actual icon component
+              const IconComponent = {
+                Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake,
+                Truck, Settings, Shield, Factory
+              }[solution.icon_name] || Box;
 
-            {/* Solution 2 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              <div className="relative">
-                <div className="h-48 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&q=80&w=800" alt="Laminated Packaging" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
-                  <Layers className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="p-8 pt-10">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Laminated Packaging</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  Advanced bonding for mono-cartons, complex laminates, and metalized polyester (Met-Pet) substrates.
-                </p>
-              </div>
-            </motion.div>
+              const imageUrl = solution.image_file_path ? solution.image_file_path : (solution.image_url || 'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&q=80&w=800');
 
-            {/* Solution 3 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              <div className="relative">
-                <div className="h-48 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1760565030346-4b947220fe3a?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Paper Bag Manufacturing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
-                  <ShoppingBag className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="p-8 pt-10">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Paper Bag Manufacturing</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  Clean-running, fast-setting adhesives optimized for automated paper bag production and handle attachment.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Solution 4 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              <div className="relative">
-                <div className="h-48 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&q=80&w=800" alt="Mattress Manufacturing" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
-                  <BedDouble className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="p-8 pt-10">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Mattress Manufacturing</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  Durable, flexible adhesives built to withstand the structural demands of the bedding and furniture industry.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Solution 5 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              <div className="relative">
-                <div className="h-48 overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&q=80&w=800" alt="PET Bottle Labeling" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
-                  <Tag className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="p-8 pt-10">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">PET Bottle Labeling</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  High-performance labeling adhesives designed for high-speed bottling and container lines.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Solution 6 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              <div className="relative">
-                <div className="h-48 overflow-hidden">
-                  <img src="https://plus.unsplash.com/premium_photo-1726736512382-dde5c56ecdd1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGRhaWx5JTIwZXNzZW50aWFsc3xlbnwwfHwwfHx8MA%3D%3D" alt="Hygiene Sectors" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
-                  <HeartHandshake className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <div className="p-8 pt-10">
-                <h3 className="text-xl font-bold text-slate-800 mb-3">Hygiene & Custom Sectors</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
-                  Safe, reliable bonding solutions tailored for non-woven hygiene products and various multi-substrate assembly needs.
-                </p>
-              </div>
-            </motion.div>
+              return (
+                <motion.div
+                  key={solution.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col"
+                >
+                  <div className="relative">
+                    <div className="h-48 overflow-hidden">
+                      <img src={imageUrl} alt={solution.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 bg-slate-100" />
+                    </div>
+                    <div className="absolute -bottom-6 left-6 w-12 h-12 bg-brand-navy rounded-lg flex items-center justify-center shadow-lg border-2 border-white z-10">
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="p-8 pt-10 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold text-slate-800 mb-3">{solution.title}</h3>
+                    <p className="text-slate-600 leading-relaxed text-sm flex-1">
+                      {solution.description}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

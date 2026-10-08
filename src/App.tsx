@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import ScrollToTop from './components/layout/ScrollToTop';
 import FloatingWhatsApp from './components/ui/FloatingWhatsApp';
 import QuoteModal from './components/ui/QuoteModal';
 import AdminLoginModal from './components/ui/AdminLoginModal';
@@ -10,15 +11,26 @@ import Products from './pages/Products';
 import AboutUs from './pages/AboutUs';
 import AdminDashboard from './pages/AdminDashboard';
 import { useUIStore } from './store/useUIStore';
+import { useCompanyStore } from './store/useCompanyStore';
+import { useProductStore } from './store/useProductStore';
 import { Analytics } from "@vercel/analytics/react";
+import { useEffect } from 'react';
 
 function App() {
   const { isAdmin } = useUIStore();
+  const { fetchInfo } = useCompanyStore();
+  const { fetchCategories } = useProductStore();
+
+  useEffect(() => {
+    fetchInfo();
+    fetchCategories();
+  }, [fetchInfo, fetchCategories]);
   const location = useLocation();
   const siteUrl = 'https://donpack.in';
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-bg text-slate-900 font-sans">
+      <ScrollToTop />
       <Helmet>
         <title>DonPack Adhesives | Advanced Adhesive Solutions</title>
         <meta name="description" content="DONPACK ADHESIVES delivers innovative, high-performance hot-melt technology tailored for demanding industrial and packaging applications worldwide." />

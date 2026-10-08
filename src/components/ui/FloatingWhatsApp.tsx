@@ -1,8 +1,12 @@
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useCompanyStore } from '../../store/useCompanyStore';
 
 export default function FloatingWhatsApp() {
-  const phoneNumber = "919787465677"; // DonPack Adhesives
+  const { info } = useCompanyStore();
+  
+  // Clean phone number for WhatsApp (e.g., "+91 97874 65677" -> "919787465677")
+  const phoneNumber = info.phone.replace(/[^0-9]/g, ''); 
   const message = "Hello, I am interested in your hot melt adhesives.";
   
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
