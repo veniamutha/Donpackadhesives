@@ -70,6 +70,8 @@ export default function AdminDashboard() {
   }, [fetchProducts, fetchFlyers, fetchCategories, fetchSolutions]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // @ts-ignore - oxlint warning about set-state-in-effect
     setContactPhone(companyInfo.phone);
     setContactEmail(companyInfo.email);
     setContactAddress(companyInfo.address);

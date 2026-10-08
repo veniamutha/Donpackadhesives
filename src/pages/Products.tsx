@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Armchair, X, ChevronRight, ShoppingCart, ChevronLeft, LayoutGrid, PenTool, Loader2 } from 'lucide-react';
+import { Box, X, ChevronRight, ShoppingCart, ChevronLeft, LayoutGrid, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useProductStore, type Product } from '../store/useProductStore';
 import { useUIStore } from '../store/useUIStore';

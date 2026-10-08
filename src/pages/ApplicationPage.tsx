@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ShieldCheck, ChevronRight, ShoppingCart, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useProductStore, type Product } from '../store/useProductStore';
+import { useProductStore } from '../store/useProductStore';
 import { useUIStore } from '../store/useUIStore';
 import { seoApplications } from '../data/seoApplications';
 
