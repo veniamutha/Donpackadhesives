@@ -5,7 +5,7 @@ import { useProductStore, type Product } from '../store/useProductStore';
 import { useUIStore } from '../store/useUIStore';
 
 export default function Products() {
-  const { selectedApplication, setApplication, products, categories, isLoading, error, fetchProducts, fetchCategories } = useProductStore();
+  const { selectedCategory, setCategory, products, categories, isLoading, error, fetchProducts, fetchCategories } = useProductStore();
   const { setQuoteModalOpen } = useUIStore();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -15,18 +15,21 @@ export default function Products() {
     return product.category || 'Others';
   };
 
-  // Get a unique list of all categories that actually have products in them (to avoid empty sections)
-  // or we can just iterate over `categories` from the store.
-  const PRODUCT_CATEGORIES = categories.map(c => c.name);
+  // Combine categories from db with any categories found in products (to ensure 'Others' is caught)
+  const categoryNamesFromDb = categories.map(c => c.name);
+  const categoriesFromProducts = Array.from(new Set(products.map(p => getProductCategory(p))));
+  
+  // Create a unique list keeping DB categories first, then any extra ones like 'Others'
+  const PRODUCT_CATEGORIES = Array.from(new Set([...categoryNamesFromDb, ...categoriesFromProducts]));
 
   useEffect(() => {
     fetchProducts();
     fetchCategories();
   }, [fetchProducts, fetchCategories]);
 
-  const filteredProducts = selectedApplication === 'All' 
+  const filteredProducts = selectedCategory === 'All' 
     ? products 
-    : products.filter(p => p.apps.includes(selectedApplication) || p.apps.includes('All'));
+    : products.filter(p => getProductCategory(p) === selectedCategory);
 
   const handleOpenModal = (product: Product) => {
     setSelectedProduct(product);
@@ -54,33 +57,27 @@ export default function Products() {
   return (
     <div className="min-h-[calc(100vh-64px)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
-      {/* Application Finder Header */}
+      {/* Category Filter Header */}
       <div className="text-center mb-10 sm:mb-16">
-        <h2 className="text-sm font-bold text-brand-green uppercase tracking-wider mb-2">Application Finder</h2>
-        <h3 className="text-2xl sm:text-4xl font-extrabold text-brand-navy mb-6 sm:mb-8">What are you bonding?</h3>
+        <h2 className="text-sm font-bold text-brand-green uppercase tracking-wider mb-2">Category Filter</h2>
+        <h3 className="text-2xl sm:text-4xl font-extrabold text-brand-navy mb-6 sm:mb-8">What are you looking for?</h3>
         
         {/* Filter Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {[
-            { label: 'All',       value: 'All',       icon: LayoutGrid },
-            { label: 'Packaging', value: 'Packaging', icon: Box },
-            { label: 'Furniture', value: 'Furniture', icon: Armchair },
-            { label: 'Glue Guns', value: 'Guns',      icon: PenTool },
-          ].map((app) => {
-            const Icon = app.icon;
-            const isSelected = selectedApplication === app.value;
+        <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+          {['All', ...PRODUCT_CATEGORIES].map((categoryName) => {
+            const isSelected = selectedCategory === categoryName;
             return (
               <button
-                key={app.value}
-                onClick={() => setApplication(app.value as any)}
-                className={`p-3 sm:p-6 rounded-xl border-2 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-all ${
+                key={categoryName}
+                onClick={() => setCategory(categoryName)}
+                className={`px-6 py-3 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${
                   isSelected 
                     ? 'border-brand-green bg-green-50 shadow-md transform -translate-y-1' 
                     : 'border-slate-100 bg-white hover:border-brand-navy hover:shadow'
                 }`}
               >
-                <Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${isSelected ? 'text-brand-green' : 'text-slate-400'}`} />
-                <span className={`font-bold text-sm sm:text-base ${isSelected ? 'text-brand-navy' : 'text-slate-600'}`}>{app.label}</span>
+                <LayoutGrid className={`w-5 h-5 ${isSelected ? 'text-brand-green' : 'text-slate-400'}`} />
+                <span className={`font-bold text-sm sm:text-base ${isSelected ? 'text-brand-navy' : 'text-slate-600'}`}>{categoryName}</span>
               </button>
             )
           })}
@@ -90,7 +87,7 @@ export default function Products() {
       {/* Recommended Solutions */}
       <div>
         <h3 className="text-lg sm:text-2xl font-bold text-slate-800 mb-6 sm:mb-8 border-b pb-4 flex items-center justify-between gap-2">
-          <span className="truncate">{selectedApplication === 'All' ? 'Complete Catalog' : `For ${selectedApplication}`}</span>
+          <span className="truncate">{selectedCategory === 'All' ? 'Complete Catalog' : `Category: ${selectedCategory}`}</span>
           <span className="flex-shrink-0 text-brand-navy font-bold bg-slate-100 px-3 py-1 rounded-full text-sm">{filteredProducts.length} items</span>
         </h3>
 
@@ -156,11 +153,9 @@ export default function Products() {
                         </div>
                         <div className="p-6 flex flex-col flex-1">
                           <div className="flex gap-2 mb-3 flex-wrap">
-                            {product.apps.filter(a => a !== 'All').map(app => (
-                              <span key={app} className="text-[10px] uppercase font-bold tracking-wider text-brand-green bg-green-50/80 px-2 py-1 rounded">
-                                {app}
-                              </span>
-                            ))}
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-brand-green bg-green-50/80 px-2 py-1 rounded">
+                              {getProductCategory(product)}
+                            </span>
                           </div>
                           <h4 className="text-lg font-bold text-brand-navy mb-2 line-clamp-2">{product.name}</h4>
                           <p className="text-sm text-slate-600 mb-6 line-clamp-3 flex-1">{product.desc}</p>

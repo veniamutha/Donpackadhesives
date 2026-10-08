@@ -9,7 +9,6 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import AboutUs from './pages/AboutUs';
 import AdminDashboard from './pages/AdminDashboard';
-import ApplicationPage from './pages/ApplicationPage';
 import { useUIStore } from './store/useUIStore';
 import { Analytics } from "@vercel/analytics/react";
 
@@ -34,7 +33,6 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/about" element={<AboutUs />} />
-              <Route path="/applications/:slug" element={<ApplicationPage />} />
             </Routes>
           </main>
           <Footer />

@@ -9,7 +9,7 @@ export type Category = {
 export type Product = {
   id: string; // uuid
   name: string;
-  apps: string[];
+  apps?: string[];
   desc: string;
   images: string[];
   longDesc: string;
@@ -17,11 +17,9 @@ export type Product = {
   category?: string; // New category field
 };
 
-type Application = 'All' | 'Packaging' | 'Furniture' | 'Guns' | string;
-
 interface ProductStore {
-  selectedApplication: Application;
-  setApplication: (app: Application) => void;
+  selectedCategory: string;
+  setCategory: (cat: string) => void;
   products: Product[];
   categories: Category[];
   isLoading: boolean;
@@ -31,8 +29,8 @@ interface ProductStore {
 }
 
 export const useProductStore = create<ProductStore>((set) => ({
-  selectedApplication: 'All',
-  setApplication: (app) => set({ selectedApplication: app }),
+  selectedCategory: 'All',
+  setCategory: (cat) => set({ selectedCategory: cat }),
   
   products: [],
   categories: [],

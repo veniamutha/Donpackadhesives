@@ -27,7 +27,6 @@ export default function AdminDashboard() {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [longDesc, setLongDesc] = useState('');
-  const [apps, setApps] = useState<string[]>(['All']);
   const [specs, setSpecs] = useState<{key: string, value: string}[]>([]);
   const [category, setCategory] = useState('Others');
   const [images, setImages] = useState<File[]>([]); 
@@ -135,11 +134,26 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this category? Products using it will retain the text, but it will be removed from this list.')) return;
+    const categoryToDelete = categories.find(c => c.id === id);
+    if (!categoryToDelete) return;
+
+    if (!window.confirm(`Are you sure you want to delete "${categoryToDelete.name}"? Any products currently in this category will be automatically moved back to "Others".`)) return;
+    
     try {
+      // 1. Move products to "Others"
+      const { error: updateError } = await supabase
+        .from('products')
+        .update({ category: 'Others' })
+        .eq('category', categoryToDelete.name);
+      
+      if (updateError) throw updateError;
+
+      // 2. Delete the category
       const { error } = await supabase.from('categories').delete().eq('id', id);
       if (error) throw error;
+      
       fetchCategories();
+      fetchProducts(); // Refresh products to reflect the change to Others
     } catch (err: any) {
       alert('Error deleting category: ' + err.message);
     }
@@ -178,7 +192,6 @@ export default function AdminDashboard() {
     setDesc('');
     setLongDesc('');
     setCategory(categories[0]?.name || 'Others');
-    setApps(['All']);
     setSpecs([]);
     setImages([]);
     setImagePreviewUrls([]);
@@ -192,7 +205,6 @@ export default function AdminDashboard() {
     setDesc(product.desc);
     setLongDesc(product.longDesc || '');
     setCategory(product.category || 'Others');
-    setApps(product.apps);
     
     const formattedSpecs = Object.entries(product.specs || {}).map(([key, value]) => ({ key, value: String(value) }));
     setSpecs(formattedSpecs);
@@ -236,14 +248,6 @@ export default function AdminDashboard() {
     setSpecs(specs.filter((_, i) => i !== index));
   };
 
-  const toggleApp = (app: string) => {
-    if (apps.includes(app)) {
-      setApps(apps.filter(a => a !== app));
-    } else {
-      setApps([...apps, app]);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || (images.length === 0 && existingImageUrls.length === 0)) {
@@ -284,7 +288,6 @@ export default function AdminDashboard() {
         name,
         desc,
         longDesc,
-        apps,
         category,
         specs: specsJson,
         images: finalImageUrls
@@ -302,7 +305,6 @@ export default function AdminDashboard() {
       setName('');
       setDesc('');
       setLongDesc('');
-      setApps(['All']);
       setCategory('Others');
       setSpecs([]);
       setImages([]);
@@ -420,6 +422,7 @@ export default function AdminDashboard() {
                   <label className="block text-sm font-bold text-slate-700 mb-1">Category *</label>
                   <select required value={category} onChange={e => setCategory(e.target.value)} className="w-full p-3 border border-slate-300 rounded focus:ring-2 focus:ring-brand-green focus:border-brand-green bg-white">
                     <option value="" disabled>Select a category</option>
+                    <option value="Others">Others</option>
                     {categories.map(c => (
                       <option key={c.id} value={c.name}>{c.name}</option>
                     ))}
@@ -434,22 +437,6 @@ export default function AdminDashboard() {
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-1">Detailed Description (Optional)</label>
                   <textarea value={longDesc} onChange={e => setLongDesc(e.target.value)} rows={4} className="w-full p-3 border border-slate-300 rounded focus:ring-2 focus:ring-brand-green focus:border-brand-green" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Applications</label>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', 'Packaging', 'Furniture', 'Guns'].map(app => (
-                      <button
-                        key={app}
-                        type="button"
-                        onClick={() => toggleApp(app)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${apps.includes(app) ? 'bg-brand-navy text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                      >
-                        {app}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 <div>
