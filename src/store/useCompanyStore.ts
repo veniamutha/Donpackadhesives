@@ -62,11 +62,17 @@ export const useCompanyStore = create<CompanyStore>((set, get) => ({
       
       let error;
       if (existingData) {
-        const res = await supabase.from('company_info').update(updated).eq('id', existingData.id);
+        const res = await supabase.from('company_info').update(updated).eq('id', existingData.id).select();
         error = res.error;
+        if (!error && (!res.data || res.data.length === 0)) {
+          throw new Error('Update failed. No rows were changed (check Supabase RLS policies).');
+        }
       } else {
-        const res = await supabase.from('company_info').insert([updated]);
+        const res = await supabase.from('company_info').insert([updated]).select();
         error = res.error;
+        if (!error && (!res.data || res.data.length === 0)) {
+          throw new Error('Insert failed. No rows were changed (check Supabase RLS policies).');
+        }
       }
 
       if (error) throw error;

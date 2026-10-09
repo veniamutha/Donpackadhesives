@@ -19,7 +19,7 @@ export default function Footer() {
             <img src="/logo.jpg" alt="DonPack Adhesives Logo" className="h-16 w-16 object-contain" onError={(e) => { e.currentTarget.src = '/logo.png'; }} />
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight mb-4">
-            DONPACK <span className="text-brand-green">ADHESIVES</span>
+            DONPACK <span className="text-brand-red">ADHESIVES</span>
           </h2>
           <p className="text-slate-300 max-w-sm leading-relaxed mb-6">
             Premier importers and suppliers of high-grade hot melt adhesives, engineered to meet the demanding performance standards of modern, high-speed manufacturing environments.
@@ -30,12 +30,12 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
           <ul className="space-y-4 text-slate-300">
-            <li><Link to="/" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> Home</Link></li>
-            <li><Link to="/products" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> Products</Link></li>
-            <li><Link to="/about" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> About Us</Link></li>
+            <li><Link to="/" className="hover:text-brand-red transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-red" /> Home</Link></li>
+            <li><Link to="/products" className="hover:text-brand-red transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-red" /> Products</Link></li>
+            <li><Link to="/about" className="hover:text-brand-red transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-red" /> About Us</Link></li>
             <li>
-              <a href="https://www.indiamart.com/donpack/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-brand-green transition-colors">
-                <ChevronRight className="w-4 h-4 text-brand-green" /> IndiaMART Profile <ExternalLink className="w-3 h-3 ml-1" />
+              <a href="https://www.indiamart.com/donpack/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-brand-red transition-colors">
+                <ChevronRight className="w-4 h-4 text-brand-red" /> IndiaMART Profile <ExternalLink className="w-3 h-3 ml-1" />
               </a>
             </li>
           </ul>
@@ -47,13 +47,13 @@ export default function Footer() {
           <ul className="space-y-4 text-slate-300">
             {categories.slice(0, 6).map((cat) => (
               <li key={cat.id}>
-                <Link to={`/products?category=${encodeURIComponent(cat.name)}`} className="hover:text-brand-green transition-colors flex items-center gap-2">
-                  <ChevronRight className="w-4 h-4 text-brand-green" /> {cat.name}
+                <Link to={`/products?category=${encodeURIComponent(cat.name)}`} className="hover:text-brand-red transition-colors flex items-center gap-2">
+                  <ChevronRight className="w-4 h-4 text-brand-red" /> {cat.name}
                 </Link>
               </li>
             ))}
             {categories.length === 0 && (
-              <li><Link to="/products" className="hover:text-brand-green transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-green" /> Hot Melt Adhesives</Link></li>
+              <li><Link to="/products" className="hover:text-brand-red transition-colors flex items-center gap-2"><ChevronRight className="w-4 h-4 text-brand-red" /> Hot Melt Adhesives</Link></li>
             )}
           </ul>
         </div>
@@ -63,21 +63,21 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-6">Contact Us</h3>
           <ul className="space-y-4 text-slate-300">
             <li className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-brand-green shrink-0 mt-0.5" />
+              <MapPin className="w-5 h-5 text-brand-red shrink-0 mt-0.5" />
               <span className="whitespace-pre-line">
                 {info.address}
               </span>
             </li>
             <li className="flex items-center gap-3">
-              <Phone className="w-5 h-5 text-brand-green shrink-0" />
+              <Phone className="w-5 h-5 text-brand-red shrink-0" />
               <span>{info.phone}</span>
             </li>
             <li className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-brand-green shrink-0" />
-              <a href={`mailto:${info.email}`} className="hover:text-brand-green transition-colors">{info.email}</a>
+              <Mail className="w-5 h-5 text-brand-red shrink-0" />
+              <a href={`mailto:${info.email}`} className="hover:text-brand-red transition-colors">{info.email}</a>
             </li>
             <li className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-brand-green shrink-0" />
+              <Clock className="w-5 h-5 text-brand-red shrink-0" />
               <span>{info.working_hours}</span>
             </li>
           </ul>

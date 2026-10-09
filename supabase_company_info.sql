@@ -25,14 +25,16 @@ ON CONFLICT (id) DO NOTHING;
 ALTER TABLE company_info ENABLE ROW LEVEL SECURITY;
 
 -- Allow public read access
+DROP POLICY IF EXISTS "Public read access on company_info" ON company_info;
 CREATE POLICY "Public read access on company_info"
 ON company_info FOR SELECT
 TO public
 USING (true);
 
--- Allow authenticated users to update/insert
+-- Allow public to update/insert since auth is handled client-side
+DROP POLICY IF EXISTS "Auth users can update company_info" ON company_info;
 CREATE POLICY "Auth users can update company_info"
 ON company_info FOR ALL
-TO authenticated
+TO public
 USING (true)
 WITH CHECK (true);
