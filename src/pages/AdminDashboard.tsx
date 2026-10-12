@@ -7,6 +7,9 @@ import { useSolutionStore } from '../store/useSolutionStore';
 import type { Solution } from '../store/useSolutionStore';
 import { useCompanyStore } from '../store/useCompanyStore';
 import { LogOut, Plus, Trash2, Image as ImageIcon, Loader2, Lock, X, LayoutGrid, Image as FlyerIcon, Tags, Briefcase, Phone } from 'lucide-react';
+// @ts-ignore
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 export default function AdminDashboard() {
   const { setAdmin } = useUIStore();
@@ -22,6 +25,7 @@ export default function AdminDashboard() {
   const [contactEmail, setContactEmail] = useState(companyInfo.email);
   const [contactAddress, setContactAddress] = useState(companyInfo.address);
   const [contactWorkingHours, setContactWorkingHours] = useState(companyInfo.working_hours);
+  const [contactAboutUs, setContactAboutUs] = useState(companyInfo.about_us || '');
   const [contactSubmitting, setContactSubmitting] = useState(false);
   
   // Product State
@@ -76,6 +80,7 @@ export default function AdminDashboard() {
     setContactEmail(companyInfo.email);
     setContactAddress(companyInfo.address);
     setContactWorkingHours(companyInfo.working_hours);
+    setContactAboutUs(companyInfo.about_us || '');
   }, [companyInfo]);
 
   const handleLogout = () => {
@@ -263,8 +268,9 @@ export default function AdminDashboard() {
         email: contactEmail,
         address: contactAddress,
         working_hours: contactWorkingHours,
+        about_us: contactAboutUs,
       });
-      alert('Contact info updated successfully!');
+      alert('Company info updated successfully!');
     } catch (err: any) {
       alert('Error updating contact info: ' + err.message);
     } finally {
@@ -559,7 +565,7 @@ export default function AdminDashboard() {
             onClick={() => { setActiveTab('contact'); setIsFormOpen(false); setIsSolFormOpen(false); }}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors whitespace-nowrap ${activeTab === 'contact' ? 'bg-brand-navy text-white' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border border-slate-200'}`}
           >
-            <Phone className="w-5 h-5" /> Manage Contact Info
+            <Phone className="w-5 h-5" /> Manage Company Info
           </button>
         </div>
 
@@ -1022,9 +1028,9 @@ export default function AdminDashboard() {
             </div>
           )
         ) : activeTab === 'contact' ? (
-          /* ================= CONTACT INFO VIEW ================= */
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl font-extrabold text-slate-800 mb-8">Manage Contact Info</h2>
+          /* ================= COMPANY INFO VIEW ================= */
+          <div className="max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl font-extrabold text-slate-800 mb-8">Manage Company Info</h2>
             {companyLoading ? (
               <div className="flex justify-center p-12">
                 <Loader2 className="w-8 h-8 text-brand-navy animate-spin" />
@@ -1070,6 +1076,12 @@ export default function AdminDashboard() {
                     onChange={(e) => setContactWorkingHours(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">About Us</label>
+                  <div className="bg-white rounded-lg">
+                    <ReactQuill theme="snow" value={contactAboutUs} onChange={setContactAboutUs} />
+                  </div>
                 </div>
                 
                 <button 

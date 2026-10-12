@@ -7,6 +7,7 @@ export interface CompanyInfo {
   email: string;
   address: string;
   working_hours: string;
+  about_us: string;
 }
 
 const defaultInfo: CompanyInfo = {
@@ -15,6 +16,16 @@ const defaultInfo: CompanyInfo = {
   email: 'sales@donpack.in',
   address: '42A, Duraisamy Street, 2nd Main Rd\nRajiv Nagar, Vanagaram, Chennai\nAdayalampattu, Tamil Nadu 600077, India',
   working_hours: '10:00 - 18:30',
+  about_us: `<p>Welcome to Donpack, your trusted partner in advanced industrial bonding solutions. Headquartered in Chennai, we are premier importers and suppliers of high-grade hot melt adhesives, engineered to meet the demanding performance standards of modern, high-speed manufacturing environments.</p>
+<p><br></p>
+<p>With a deep understanding of diverse industrial workflows, we supply versatile, reliable, and premium-quality hot melt formulations designed to ensure seamless production lines and superior structural integrity for our clients across India.</p>
+<p><br></p>
+<h3><strong>Why Choose Donpack?</strong></h3>
+<ul>
+  <li><strong>Global Quality Standards:</strong> Sourced from world-class manufacturers to guarantee optimal thermal stability, precise open times, and exceptional bond strength.</li>
+  <li><strong>Industry-Wide Versatility:</strong> A comprehensive portfolio capable of handling challenging surfaces, low-energy materials, and varying application machinery speeds.</li>
+  <li><strong>Strategic Hub &amp; Reliability:</strong> Centrally positioned in Chennai, we offer efficient inventory management and dependable distribution to keep your industrial operations running without interruption.</li>
+</ul>`,
 };
 
 interface CompanyStore {
@@ -75,7 +86,12 @@ export const useCompanyStore = create<CompanyStore>((set, get) => ({
         }
       }
 
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes("about_us") || (error.message?.includes("schema cache") && error.message?.includes("column"))) {
+          throw new Error("The 'about_us' column is missing in your Supabase table. Please run the SQL in 'supabase_company_info.sql' in your Supabase SQL Editor: ALTER TABLE company_info ADD COLUMN IF NOT EXISTS about_us text NOT NULL DEFAULT ''; NOTIFY pgrst, 'reload schema';");
+        }
+        throw error;
+      }
       set({ info: updated });
     } catch (err: any) {
       set({ error: err.message });
