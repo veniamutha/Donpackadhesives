@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 export interface CompanyInfo {
   id: string;
   phone: string;
+  phone2?: string;
   email: string;
   address: string;
   working_hours: string;
@@ -12,7 +13,8 @@ export interface CompanyInfo {
 
 const defaultInfo: CompanyInfo = {
   id: 'default',
-  phone: '+91 97874 65677',
+  phone: '+91 98944 14285',
+  phone2: '+91 97874 65677',
   email: 'sales@donpack.in',
   address: '42A, Duraisamy Street, 2nd Main Rd\nRajiv Nagar, Vanagaram, Chennai\nAdayalampattu, Tamil Nadu 600077, India',
   working_hours: '10:00 - 18:30',
@@ -87,8 +89,8 @@ export const useCompanyStore = create<CompanyStore>((set, get) => ({
       }
 
       if (error) {
-        if (error.message?.includes("about_us") || (error.message?.includes("schema cache") && error.message?.includes("column"))) {
-          throw new Error("The 'about_us' column is missing in your Supabase table. Please run the SQL in 'supabase_company_info.sql' in your Supabase SQL Editor: ALTER TABLE company_info ADD COLUMN IF NOT EXISTS about_us text NOT NULL DEFAULT ''; NOTIFY pgrst, 'reload schema';");
+        if (error.message?.includes("about_us") || error.message?.includes("phone2") || (error.message?.includes("schema cache") && error.message?.includes("column"))) {
+          throw new Error("A column may be missing in your Supabase table. Please run the SQL in 'supabase_company_info.sql' in your Supabase SQL Editor: ALTER TABLE company_info ADD COLUMN IF NOT EXISTS phone2 text NOT NULL DEFAULT ''; NOTIFY pgrst, 'reload schema';");
         }
         throw error;
       }

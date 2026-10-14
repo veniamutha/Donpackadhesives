@@ -68,9 +68,18 @@ export default function Footer() {
                 {info.address}
               </span>
             </li>
-            <li className="flex items-center gap-3">
-              <Phone className="w-5 h-5 text-brand-red shrink-0" />
-              <span>{info.phone}</span>
+            <li className="flex items-start gap-3">
+              <Phone className="w-5 h-5 text-brand-red shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-1">
+                <a href={`tel:${(info.phone || '').replace(/[^0-9+]/g, '')}`} className="hover:text-brand-red transition-colors">
+                  {info.phone}
+                </a>
+                {info.phone2 && (
+                  <a href={`tel:${(info.phone2 || '').replace(/[^0-9+]/g, '')}`} className="hover:text-brand-red transition-colors text-slate-300">
+                    {info.phone2}
+                  </a>
+                )}
+              </div>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-brand-red shrink-0" />

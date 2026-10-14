@@ -42,6 +42,16 @@ export default function AboutUs() {
                 <strong>Donpack Adhesives</strong><br/>
                 42A, Duraisamy Street, 2nd Main Rd<br/>
                 Rajiv Nagar, Vanagaram, Chennai
+                <div className="mt-2 text-xs sm:text-sm text-slate-700 flex flex-col gap-0.5">
+                  <a href={`tel:${(info.phone || '').replace(/[^0-9+]/g, '')}`} className="font-semibold text-brand-navy hover:text-brand-red transition-colors">
+                    📞 {info.phone}
+                  </a>
+                  {info.phone2 && (
+                    <a href={`tel:${(info.phone2 || '').replace(/[^0-9+]/g, '')}`} className="text-slate-600 hover:text-brand-red transition-colors">
+                      📞 {info.phone2}
+                    </a>
+                  )}
+                </div>
               </div>
               <a 
                 href="https://maps.app.goo.gl/muVbU3q7NNmnQhFFA" 

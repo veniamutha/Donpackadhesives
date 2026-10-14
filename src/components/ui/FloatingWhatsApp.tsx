@@ -5,8 +5,9 @@ import { useCompanyStore } from '../../store/useCompanyStore';
 export default function FloatingWhatsApp() {
   const { info } = useCompanyStore();
   
-  // Clean phone number for WhatsApp (e.g., "+91 97874 65677" -> "919787465677")
-  const phoneNumber = info.phone.replace(/[^0-9]/g, ''); 
+  // Clean phone number for WhatsApp (e.g., "+91 98944 14285" or "9894414285" -> "919894414285")
+  const rawDigits = (info.phone || '').replace(/[^0-9]/g, ''); 
+  const phoneNumber = rawDigits.length === 10 ? `91${rawDigits}` : rawDigits;
   const message = "Hello, I am interested in your hot melt adhesives.";
   
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

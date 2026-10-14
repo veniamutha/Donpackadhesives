@@ -22,6 +22,7 @@ export default function AdminDashboard() {
 
   // Contact Info State
   const [contactPhone, setContactPhone] = useState(companyInfo.phone);
+  const [contactPhone2, setContactPhone2] = useState(companyInfo.phone2 || '');
   const [contactEmail, setContactEmail] = useState(companyInfo.email);
   const [contactAddress, setContactAddress] = useState(companyInfo.address);
   const [contactWorkingHours, setContactWorkingHours] = useState(companyInfo.working_hours);
@@ -77,6 +78,7 @@ export default function AdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     // @ts-ignore - oxlint warning about set-state-in-effect
     setContactPhone(companyInfo.phone);
+    setContactPhone2(companyInfo.phone2 || '');
     setContactEmail(companyInfo.email);
     setContactAddress(companyInfo.address);
     setContactWorkingHours(companyInfo.working_hours);
@@ -265,6 +267,7 @@ export default function AdminDashboard() {
     try {
       await updateCompanyInfo({
         phone: contactPhone,
+        phone2: contactPhone2,
         email: contactEmail,
         address: contactAddress,
         working_hours: contactWorkingHours,
@@ -1037,15 +1040,28 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <form onSubmit={handleContactSubmit} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
-                  <input
-                    type="text"
-                    required
-                    value={contactPhone}
-                    onChange={(e) => setContactPhone(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Primary Phone (First Line)</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="+91 98944 14285"
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Secondary Phone (Second Line)</label>
+                    <input
+                      type="text"
+                      placeholder="+91 97874 65677"
+                      value={contactPhone2}
+                      onChange={(e) => setContactPhone2(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-all"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
