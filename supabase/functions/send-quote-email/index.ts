@@ -5,6 +5,11 @@ serve(async (req) => {
   try {
     const body = await req.json();
 
+    // Ignore events that are not INSERT (e.g. UPDATE, DELETE)
+    if (body.type && body.type !== 'INSERT') {
+      return new Response(JSON.stringify({ message: 'Ignored non-INSERT event' }), { status: 200 });
+    }
+
     // Supabase sends the new row data under `record`
     const record = body.record;
 
@@ -76,7 +81,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'DonPack Quotes <onboarding@resend.dev>',
-        to: ['donpackindia@gmail.com'],
+        to: ['veniamutha1969@gmail.com'],
         subject: `New Quote Request from ${full_name} — ${company_name}`,
         html: emailHtml,
       }),
