@@ -76,7 +76,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'DonPack Quotes <onboarding@resend.dev>',
-        to: ['delivered@resend.dev'],
+        to: ['donpackindia@gmail.com'],
         subject: `New Quote Request from ${full_name} — ${company_name}`,
         html: emailHtml,
       }),
