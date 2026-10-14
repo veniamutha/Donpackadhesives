@@ -18,17 +18,17 @@ import { useEffect } from 'react';
 
 const SEO_ROUTES: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'DonPack Adhesives | Hot-Melt Adhesive Solutions in India',
+    title: 'DONPACK Adhesives | Hot-Melt Adhesive Solutions in India',
     description:
       'DonPack Adhesives manufactures premium hot-melt adhesives for packaging, furniture, carton sealing & industrial applications. Trusted by 500+ manufacturers in India. Get a free quote.',
   },
   '/products': {
-    title: 'Adhesive Products Catalog | DonPack Adhesives',
+    title: 'Adhesive Products Catalog | DONPACK Adhesives',
     description:
       'Browse our complete range of hot-melt adhesives: EVA, PUR, PSA, and specialty adhesives for packaging, furniture, and industrial use. Download data sheets and request a quote.',
   },
   '/about': {
-    title: 'About DonPack Adhesives | Chennai-Based Adhesive Manufacturer',
+    title: 'About DONPACK Adhesives | Chennai-Based Adhesive Manufacturer',
     description:
       'Learn about DonPack Adhesives — an innovative adhesive manufacturer based in Chennai, India, delivering high-performance hot-melt bonding solutions to 500+ manufacturers worldwide.',
   },
