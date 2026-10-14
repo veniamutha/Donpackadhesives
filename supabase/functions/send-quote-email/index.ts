@@ -23,7 +23,7 @@ serve(async (req) => {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
         <div style="background: #0a2540; padding: 20px 30px;">
           <h2 style="color: #4ade80; margin: 0;">New Quote Request</h2>
-          <p style="color: #94a3b8; margin: 4px 0 0;">DonPack Adhesives — donpack.in</p>
+          <p style="color: #94a3b8; margin: 4px 0 0;">Donpack Adhesives — donpack.in</p>
         </div>
         <div style="padding: 30px;">
           <table style="width: 100%; border-collapse: collapse;">
@@ -62,7 +62,7 @@ serve(async (req) => {
           </div>
         </div>
         <div style="background: #f8fafc; padding: 16px 30px; text-align: center; font-size: 12px; color: #94a3b8;">
-          This is an automated notification from your DonPack Adhesives website.
+          This is an automated notification from your Donpack Adhesives website.
         </div>
       </div>
     `;
@@ -80,7 +80,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'DONPACK Quotes <onboarding@resend.dev>',
+        from: 'Donpack Quotes <onboarding@resend.dev>',
         to: ['donpackindia@gmail.com'],
         subject: `New Quote Request from ${full_name} — ${company_name}`,
         html: emailHtml,
