@@ -1,0 +1,104 @@
+# Vercel Custom Domain Setup Guide for donpack.in
+
+This guide details the exact steps to configure and verify your custom domain **`donpack.in`** and **`www.donpack.in`** on Vercel.
+
+---
+
+## 1. Complete Setup in Vercel Dashboard
+
+1. On your current Vercel screen:
+   - Click the black **Save** button on the `donpack.in` card to save the **308 Permanent Redirect** to `www.donpack.in`.
+2. Keep this tab open so you can refresh once the DNS records are added.
+
+---
+
+## 2. DNS Records to Add in Your Domain Registrar
+
+Log into the account where you purchased your domain (**GoDaddy**, **Hostinger**, **Namecheap**, **BigRock**, etc.), navigate to **DNS Management** / **DNS Zone Editor**, and add or update the following records:
+
+### Record 1: Main Website (`www.donpack.in`)
+
+| Field | Value | Notes |
+| :--- | :--- | :--- |
+| **Type** | `CNAME` | Alias record |
+| **Name / Host** | `www` | Subdomain |
+| **Value / Target** | `0bf5d6bc4c419181.vercel-dns-017.com.` | *Copy exact value from Vercel. If your registrar errors on the trailing dot, remove the final `.`* |
+| **TTL** | `Automatic` or `3600` (1 hour) | Default |
+
+### Record 2: Root Domain Redirect (`donpack.in`)
+
+| Field | Value | Notes |
+| :--- | :--- | :--- |
+| **Type** | `A` | IPv4 address |
+| **Name / Host** | `@` | Root/apex domain (leave empty if `@` is not accepted) |
+| **Value / Target** | `76.76.21.21` | Vercel Anycast IP |
+| **TTL** | `Automatic` or `3600` (1 hour) | Default |
+
+> **Important Cleanup:** If your registrar already has default/parking `A` or `CNAME` records pointing to parking pages for `www` or `@`, delete or edit them so they don't clash with the records above.
+
+---
+
+## 3. Verify on Vercel
+
+1. Wait **5 to 15 minutes** for DNS propagation (can occasionally take longer depending on provider).
+2. Go back to **Vercel Dashboard → Project Settings → Domains**.
+3. Click the **Refresh** button next to both domains.
+4. Once the status shows a green checkmark (**Valid Configuration**):
+   - Vercel automatically provisions a free **Let's Encrypt SSL certificate** (`https://`).
+   - Visitors navigating to `http://donpack.in`, `https://donpack.in`, or `http://www.donpack.in` will all seamlessly load `https://www.donpack.in`.
+
+---
+
+## 4. Provider-Specific Guides
+
+<details>
+<summary><b>If your registrar is GoDaddy</b></summary>
+
+1. Sign in to your **GoDaddy Domain Portfolio**.
+2. Select **donpack.in** and click **DNS**.
+3. Click **Add New Record**:
+   - Type: `CNAME` | Name: `www` | Value: `0bf5d6bc4c419181.vercel-dns-017.com` | TTL: `1/2 Hour` or `1 Hour`
+4. Click **Add New Record**:
+   - Type: `A` | Name: `@` | Value: `76.76.21.21` | TTL: `1/2 Hour` or `1 Hour`
+5. Save changes.
+</details>
+
+<details>
+<summary><b>If your registrar is Hostinger</b></summary>
+
+1. Open **Hostinger hPanel** → **Domains** → Select **donpack.in**.
+2. Click **DNS / Nameservers** in the left menu.
+3. Under **Manage DNS records**:
+   - Add CNAME: Name: `www` | Target: `0bf5d6bc4c419181.vercel-dns-017.com` | TTL: `3600`
+   - Add A: Name: `@` | Points to: `76.76.21.21` | TTL: `3600`
+4. Delete any conflicting default A or CNAME records for `www` or `@`.
+</details>
+
+<details>
+<summary><b>If your registrar is Namecheap</b></summary>
+
+1. Sign in to **Namecheap** → **Domain List** → Click **Manage** next to `donpack.in`.
+2. Go to the **Advanced DNS** tab.
+3. Click **Add New Record**:
+   - Type: `CNAME Record` | Host: `www` | Target: `0bf5d6bc4c419181.vercel-dns-017.com` | TTL: `Automatic`
+4. Click **Add New Record**:
+   - Type: `A Record` | Host: `@` | Value: `76.76.21.21` | TTL: `Automatic`
+5. Save all changes (green checkmark).
+</details>
+
+---
+
+## 5. Supabase & Environment Sync (Crucial)
+
+To ensure authentication redirects, email links, and API calls work properly on your production domain:
+
+1. Open your **Supabase Dashboard**.
+2. Go to **Authentication** → **URL Configuration**.
+3. Update:
+   - **Site URL**: `https://www.donpack.in`
+   - **Redirect URLs**:
+     - `https://www.donpack.in/**`
+     - `https://donpack.in/**`
+4. In **Vercel Settings → Environment Variables**, ensure:
+   - `VITE_SUPABASE_URL` is set to your Supabase project URL.
+   - `VITE_SUPABASE_ANON_KEY` is set to your Supabase anon public key.

@@ -14,7 +14,8 @@ export default function AboutUs() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto"
         >
-          <h2 className="text-3xl font-bold text-brand-navy mb-6">About DONPACK ADHESIVES</h2>
+          <h1 className="text-3xl font-bold text-brand-navy mb-6">About DONPACK ADHESIVES</h1>
+
           
           <div 
             className="mb-12 text-slate-600 leading-relaxed [&>p]:mb-4 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-brand-navy [&>h3]:mt-8 [&>h3]:mb-4 [&>h3]:border-b [&>h3]:pb-2 [&>h3]:border-slate-100 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-3 [&>ul]:mb-12 [&_strong]:text-brand-navy"

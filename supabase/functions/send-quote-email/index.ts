@@ -64,6 +64,9 @@ serve(async (req) => {
 
     // Call Resend API
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    console.log('--- NEW QUOTE EMAIL TRIGGER ---');
+    console.log('Customer:', full_name, '| Company:', company_name);
+    console.log('Resend API key exists:', !!resendApiKey);
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -73,13 +76,15 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'DonPack Quotes <onboarding@resend.dev>',
-        to: ['sales@donpack.in'],
+        to: ['delivered@resend.dev'],
         subject: `New Quote Request from ${full_name} — ${company_name}`,
         html: emailHtml,
       }),
     });
 
     const resendData = await resendResponse.json();
+    console.log('Resend HTTP Status:', resendResponse.status);
+    console.log('Resend Response Data:', JSON.stringify(resendData));
 
     if (!resendResponse.ok) {
       console.error('Resend error:', resendData);

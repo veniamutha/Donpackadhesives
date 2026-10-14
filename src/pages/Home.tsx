@@ -196,7 +196,7 @@ export default function Home() {
                     >
                       <img 
                         src={flyer.image_url} 
-                        alt="Promotional Flyer" 
+                        alt={flyer.title ? `DonPack Adhesives Promotion: ${flyer.title}` : `DonPack Adhesives Promotional Flyer ${index + 1}`}
                         className="max-h-[350px] sm:max-h-[450px] md:max-h-[550px] max-w-[80vw] sm:max-w-[85vw] md:max-w-none w-auto h-auto rounded-xl shadow-[0_15px_35px_rgba(0,0,0,0.3)]"
                       />
                     </motion.div>
