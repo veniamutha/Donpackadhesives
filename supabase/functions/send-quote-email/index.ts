@@ -80,7 +80,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'DonPack Quotes <onboarding@resend.dev>',
+        from: 'DONPACK Quotes <onboarding@resend.dev>',
         to: ['donpackindia@gmail.com'],
         subject: `New Quote Request from ${full_name} — ${company_name}`,
         html: emailHtml,
