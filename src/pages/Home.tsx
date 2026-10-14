@@ -1,17 +1,15 @@
-import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake, ChevronLeft, ChevronRight, Truck, Settings, Shield, Factory, Phone } from 'lucide-react';
+import { ShieldCheck, Globe, Leaf, Box, Layers, ShoppingBag, BedDouble, Tag, HeartHandshake, ChevronLeft, ChevronRight, Truck, Settings, Shield, Factory } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUIStore } from '../store/useUIStore';
 import { useFlyerStore } from '../store/useFlyerStore';
 import { useSolutionStore } from '../store/useSolutionStore';
-import { useCompanyStore } from '../store/useCompanyStore';
 
 export default function Home() {
   const { setQuoteModalOpen } = useUIStore();
   const { flyers, fetchFlyers } = useFlyerStore();
   const { solutions, fetchSolutions } = useSolutionStore();
-  const { info } = useCompanyStore();
   const [activeFlyerIndex, setActiveFlyerIndex] = useState(0);
   const [zoomedFlyer, setZoomedFlyer] = useState<string | null>(null);
 
@@ -312,45 +310,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Direct Manufacturer Support CTA Section */}
-      <section className="bg-white py-12 sm:py-16 px-4 sm:px-8 md:px-16 lg:px-24 border-t border-slate-100">
-        <div className="max-w-5xl mx-auto bg-gradient-to-br from-brand-navy to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-brand-green/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left">
-              <span className="text-brand-green font-semibold uppercase tracking-wider text-xs sm:text-sm">Direct Support</span>
-              <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-3">Have Technical Questions or Need Bulk Pricing?</h2>
-              <p className="text-slate-300 max-w-xl text-sm sm:text-base">
-                Connect directly with our hot-melt formulation specialists for bonding advice, trial samples, or commercial quotes.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto shrink-0">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 px-6 flex items-center gap-4 w-full sm:w-auto">
-                <div className="w-12 h-12 rounded-xl bg-brand-green text-brand-navy flex items-center justify-center shrink-0 font-bold shadow-md">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-slate-300 font-medium">Call Us Directly</span>
-                  <a href={`tel:${(info.phone || '').replace(/[^0-9+]/g, '')}`} className="text-lg font-bold text-white hover:text-brand-green transition-colors">
-                    {info.phone}
-                  </a>
-                  {info.phone2 && (
-                    <a href={`tel:${(info.phone2 || '').replace(/[^0-9+]/g, '')}`} className="text-sm font-semibold text-slate-300 hover:text-brand-green transition-colors">
-                      {info.phone2}
-                    </a>
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={() => setQuoteModalOpen(true)}
-                className="w-full sm:w-auto bg-brand-green hover:bg-[#86efac] text-brand-navy font-bold px-6 py-4 rounded-xl shadow-lg transition-all hover:scale-105 whitespace-nowrap"
-              >
-                Request a Quote
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
     </div>
   );
